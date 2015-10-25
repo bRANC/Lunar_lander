@@ -137,7 +137,7 @@ public class Play implements Screen {
 
         //föld textura fel "húzása"
         boxSprite = new Sprite(new Texture("img/splash.png"));
-        boxSprite.setSize(25f, 5f);
+        boxSprite.setSize(50f, 9.8f);
         boxSprite.setOrigin(boxSprite.getWidth() / 2, boxSprite.getHeight() / 2);
 
 
