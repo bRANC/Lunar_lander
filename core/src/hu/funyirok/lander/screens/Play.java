@@ -10,6 +10,7 @@ import com.badlogic.gdx.InputMultiplexer;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
+import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.MathUtils;
@@ -20,20 +21,22 @@ import com.badlogic.gdx.physics.box2d.BodyDef.BodyType;
 import com.badlogic.gdx.physics.box2d.Box2DDebugRenderer;
 import com.badlogic.gdx.physics.box2d.ChainShape;
 import com.badlogic.gdx.physics.box2d.FixtureDef;
+import com.badlogic.gdx.physics.box2d.PolygonShape;
 import com.badlogic.gdx.physics.box2d.World;
 import com.badlogic.gdx.utils.Array;
 
 public class Play implements Screen {
 
 	private World world;
+    private Body ground;
 	private Box2DDebugRenderer debugRenderer;
 	private SpriteBatch batch;
 	private OrthographicCamera camera;
 
 	private final float TIMESTEP = 1 / 60f;
 	private final int VELOCITYITERATIONS = 8, POSITIONITERATIONS = 3;
-
-	private Car car;
+    private Sprite boxSprite;
+	private Car car,car1;
 
 	private Array<Body> tmpBodies = new Array<Body>();
 
@@ -44,22 +47,26 @@ public class Play implements Screen {
 
 		world.step(TIMESTEP, VELOCITYITERATIONS, POSITIONITERATIONS);
 
-		camera.position.set(car.getChassis().getPosition().x, car.getChassis().getPosition().y, 0);
+		camera.position.set(car.getChassis().getPosition().x, car.getChassis().getPosition().y /*- Gdx.graphics.getHeight()/4*/, 0);
 		camera.update();
 
 		batch.setProjectionMatrix(camera.combined);
-		batch.begin();
+
+        batch.begin();
+
 		world.getBodies(tmpBodies);
-		for(Body body : tmpBodies)
-			if(body.getUserData() instanceof Sprite) {
-				Sprite sprite = (Sprite) body.getUserData();
+		for(Body body : tmpBodies){
+        if(body.getUserData() instanceof Sprite) {
+
+            Sprite sprite = (Sprite) body.getUserData();
+
 				sprite.setPosition(body.getPosition().x - sprite.getWidth() / 2, body.getPosition().y - sprite.getHeight() / 2);
 				sprite.setRotation(body.getAngle() * MathUtils.radiansToDegrees);
 				sprite.draw(batch);
-			}
+			}}
 		batch.end();
 
-		debugRenderer.render(world, camera.combined);
+        //debugRenderer.render(world, camera.combined); // hogy lássuk a mesh-t
 	}
 
 	@Override
@@ -89,42 +96,54 @@ public class Play implements Screen {
 		wheelFixtureDef.restitution = .4f;
 
 		car = new Car(world, fixtureDef, wheelFixtureDef, 0, 3, 3, 1.25f);
+        car1 = new Car(world, fixtureDef, wheelFixtureDef, 5, 3, 3, 1.25f);
+
 
 		Gdx.input.setInputProcessor(new InputMultiplexer(new InputAdapter() {
 
-			@Override
-			public boolean keyDown(int keycode) {
-				switch(keycode) {
-				case Keys.ESCAPE:
-					((Game) Gdx.app.getApplicationListener()).setScreen(new LevelMenu());
-					break;
-				}
-				return false;
-			}
+            @Override
+            public boolean keyDown(int keycode) {
+                switch (keycode) {
+                    case Keys.ESCAPE:
+                        ((Game) Gdx.app.getApplicationListener()).setScreen(new LevelMenu());
+                        break;
+                }
+                return false;
+            }
 
-			@Override
-			public boolean scrolled(int amount) {
-				camera.zoom += amount / 25f;
-				return true;
-			}
+            @Override
+            public boolean scrolled(int amount) {
+                camera.zoom += amount / 25f;
+                return true;
+            }
 
-		}, car));
+        }, car));
 
 		// GROUND
 		// body definition
 		bodyDef.type = BodyType.StaticBody;
-		bodyDef.position.set(0, 0);
+		bodyDef.position.set(0, -5f);
 
 		// ground shape
-		ChainShape groundShape = new ChainShape();
-		groundShape.createChain(new Vector2[] {new Vector2(-50, 0), new Vector2(50, 0)});
+        PolygonShape groundShape = new PolygonShape();
+		groundShape.setAsBox(25f, 5f);
 
-		// fixture definition
+
+        // fixture definition
 		fixtureDef.shape = groundShape;
 		fixtureDef.friction = .5f;
 		fixtureDef.restitution = 0;
 
-		world.createBody(bodyDef).createFixture(fixtureDef);
+
+        //föld textura fel "húzása"
+        boxSprite = new Sprite(new Texture("img/splash.png"));
+        boxSprite.setSize(25f, 5f);
+        boxSprite.setOrigin(boxSprite.getWidth() / 2, boxSprite.getHeight() / 2);
+
+
+        ground = world.createBody(bodyDef);
+        ground.createFixture(fixtureDef);
+        ground.setUserData(boxSprite);
 
 		groundShape.dispose();
 	}

@@ -24,6 +24,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
+import com.badlogic.gdx.utils.viewport.Viewport;
 
 public class MainMenu implements Screen {
 
@@ -45,7 +46,8 @@ public class MainMenu implements Screen {
 
 	@Override
 	public void resize(int width, int height) {
-		//stage.setViewport(width, height, false);
+		/*camera.viewportWidth = width / 25;
+		camera.viewportHeight = height / 25;*/
 		table.invalidateHierarchy();
 	}
 

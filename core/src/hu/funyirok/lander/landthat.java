@@ -2,6 +2,7 @@ package hu.funyirok.lander;
 
 import com.badlogic.gdx.Game;
 
+import hu.funyirok.lander.screens.Play;
 import hu.funyirok.lander.screens.Splash;
 
 public class landthat extends Game {
@@ -10,7 +11,8 @@ public class landthat extends Game {
 
 	@Override
 	public void create() {
-		setScreen(new Splash());
+		//setScreen(new Splash());
+		setScreen(new Play());
 	}
 
 	@Override
