@@ -13,19 +13,27 @@ import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.Body;
 import com.badlogic.gdx.physics.box2d.BodyDef;
 import com.badlogic.gdx.physics.box2d.BodyDef.BodyType;
 import com.badlogic.gdx.physics.box2d.Box2DDebugRenderer;
-import com.badlogic.gdx.physics.box2d.ChainShape;
 import com.badlogic.gdx.physics.box2d.FixtureDef;
 import com.badlogic.gdx.physics.box2d.PolygonShape;
 import com.badlogic.gdx.physics.box2d.World;
+import com.badlogic.gdx.scenes.scene2d.Stage;
+import com.badlogic.gdx.scenes.scene2d.ui.Label;
+import com.badlogic.gdx.scenes.scene2d.ui.Skin;
+import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.utils.Array;
 
 public class Play implements Screen {
+
+	private Stage stage;
+	private Table table;
+	private Skin skin;
 
 	private World world;
     private Body ground;
@@ -37,6 +45,7 @@ public class Play implements Screen {
 	private final int VELOCITYITERATIONS = 8, POSITIONITERATIONS = 3;
     private Sprite boxSprite;
 	private Car car,car1;
+	private Label sebbseg_ki;
 
 	private Array<Body> tmpBodies = new Array<Body>();
 
@@ -66,17 +75,33 @@ public class Play implements Screen {
 			}}
 		batch.end();
 
-        //debugRenderer.render(world, camera.combined); // hogy lássuk a mesh-t
+
+		stage.act(delta);
+        sebbseg_ki.setText("KM/H: " +(int)Math.sqrt(Math.pow((car.vissza().x+car.vissza().y),2)));
+
+        stage.draw();
+		System.out.println(car.vissza().x+" "+car.vissza().y);
+		//debugRenderer.render(world, camera.combined); // hogy lássuk a mesh-t
 	}
 
 	@Override
 	public void resize(int width, int height) {
 		camera.viewportWidth = width / 25;
 		camera.viewportHeight = height / 25;
+
 	}
 
 	@Override
 	public void show() {
+		stage = new Stage();
+
+		Gdx.input.setInputProcessor(stage);
+
+		skin = new Skin(Gdx.files.internal("ui/menuSkin.json"), new TextureAtlas("ui/atlas.pack"));
+
+		table = new Table(skin);
+		table.setFillParent(true);
+        table.left().top();
 		world = new World(new Vector2(0, -9.81f), true);
 		debugRenderer = new Box2DDebugRenderer();
 		batch = new SpriteBatch();
@@ -101,23 +126,23 @@ public class Play implements Screen {
 
 		Gdx.input.setInputProcessor(new InputMultiplexer(new InputAdapter() {
 
-            @Override
-            public boolean keyDown(int keycode) {
-                switch (keycode) {
-                    case Keys.ESCAPE:
-                        ((Game) Gdx.app.getApplicationListener()).setScreen(new LevelMenu());
-                        break;
-                }
-                return false;
-            }
+			@Override
+			public boolean keyDown(int keycode) {
+				switch (keycode) {
+					case Keys.ESCAPE:
+						((Game) Gdx.app.getApplicationListener()).setScreen(new LevelMenu());
+						break;
+				}
+				return false;
+			}
 
-            @Override
-            public boolean scrolled(int amount) {
-                camera.zoom += amount / 25f;
-                return true;
-            }
+			@Override
+			public boolean scrolled(int amount) {
+				camera.zoom += amount / 25f;
+				return true;
+			}
 
-        }, car));
+		}, car));
 
 		// GROUND
 		// body definition
@@ -140,12 +165,17 @@ public class Play implements Screen {
         boxSprite.setSize(50f, 9.8f);
         boxSprite.setOrigin(boxSprite.getWidth() / 2, boxSprite.getHeight() / 2);
 
-
-        ground = world.createBody(bodyDef);
-        ground.createFixture(fixtureDef);
-        ground.setUserData(boxSprite);
+		ground = world.createBody(bodyDef);
+		ground.createFixture(fixtureDef);
+		ground.setUserData(boxSprite);
 
 		groundShape.dispose();
+
+		//szöveg ki írás
+
+        sebbseg_ki=new Label("KM/H: "+car.vissza().x, skin, "big");
+		table.add(sebbseg_ki).padLeft(25);
+		stage.addActor(table);
 	}
 
 	@Override

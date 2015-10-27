@@ -48,6 +48,7 @@ public class MainMenu implements Screen {
 	public void resize(int width, int height) {
 		/*camera.viewportWidth = width / 25;
 		camera.viewportHeight = height / 25;*/
+		stage.getViewport().update(width, height, true);
 		table.invalidateHierarchy();
 	}
 

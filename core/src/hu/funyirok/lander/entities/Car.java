@@ -25,6 +25,9 @@ public class Car extends InputAdapter {
 	private Sprite boxSprite;
 	private Sprite wheelSprite;
 	public Car(World world, FixtureDef chassisFixtureDef, FixtureDef wheelFixtureDef, float x, float y, float width, float height) {
+
+
+
 		BodyDef bodyDef = new BodyDef();
 		bodyDef.type = BodyType.DynamicBody;
 		bodyDef.position.set(x, y);
@@ -101,6 +104,7 @@ public class Car extends InputAdapter {
 		return true;
 	}
 
+	public Vector2 vissza(){return	leftWheel.getLinearVelocity();}
 	@Override
 	public boolean keyUp(int keycode) {
 		switch(keycode) {

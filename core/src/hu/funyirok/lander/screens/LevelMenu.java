@@ -17,6 +17,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.ScrollPane;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
+import com.badlogic.gdx.scenes.scene2d.ui.TextArea;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 
 public class LevelMenu implements Screen {
@@ -37,6 +38,7 @@ public class LevelMenu implements Screen {
 	@Override
 	public void resize(int width, int height) {
 		//stage.setViewport(width, height, false);
+		stage.getViewport().update(width, height, true);
 		table.invalidateHierarchy();
 	}
 
