@@ -31,133 +31,136 @@ import com.badlogic.gdx.utils.Array;
 
 public class Play implements Screen {
 
-	private Stage stage;
-	private Table table;
-	private Skin skin;
+    private Stage stage;
+    private Table table;
+    private Skin skin;
 
-	private World world;
+    private World world;
     private Body ground;
-	private Box2DDebugRenderer debugRenderer;
-	private SpriteBatch batch;
-	private OrthographicCamera camera;
+    private Box2DDebugRenderer debugRenderer;
+    private SpriteBatch batch;
+    private OrthographicCamera camera;
 
-	private final float TIMESTEP = 1 / 60f;
-	private final int VELOCITYITERATIONS = 8, POSITIONITERATIONS = 3;
+    private final float TIMESTEP = 1 / 60f;
+    private final int VELOCITYITERATIONS = 8, POSITIONITERATIONS = 3;
     private Sprite boxSprite;
-	private Car car,car1;
-	private Label sebbseg_ki;
+    private Car car, car1;
+    private Label sebbseg_ki;
 
-	private Array<Body> tmpBodies = new Array<Body>();
+    private Array<Body> tmpBodies = new Array<Body>();
 
-	@Override
-	public void render(float delta) {
-		Gdx.gl.glClearColor(0, 0, 0, 1);
-		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
+    @Override
+    public void render(float delta) {
+        Gdx.gl.glClearColor(0, 0, 0, 1);
+        Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 
-		world.step(TIMESTEP, VELOCITYITERATIONS, POSITIONITERATIONS);
+        world.step(TIMESTEP, VELOCITYITERATIONS, POSITIONITERATIONS);
+        car.mozgas();
+        camera.position.set(car.getChassis().getPosition().x, car.getChassis().getPosition().y /*- Gdx.graphics.getHeight()/4*/, 0);
+        camera.update();
 
-		camera.position.set(car.getChassis().getPosition().x, car.getChassis().getPosition().y /*- Gdx.graphics.getHeight()/4*/, 0);
-		camera.update();
-
-		batch.setProjectionMatrix(camera.combined);
+        batch.setProjectionMatrix(camera.combined);
 
         batch.begin();
 
-		world.getBodies(tmpBodies);
-		for(Body body : tmpBodies){
-        if(body.getUserData() instanceof Sprite) {
+        world.getBodies(tmpBodies);
+        for (Body body : tmpBodies) {
+            if (body.getUserData() instanceof Sprite) {
 
-            Sprite sprite = (Sprite) body.getUserData();
+                Sprite sprite = (Sprite) body.getUserData();
 
-				sprite.setPosition(body.getPosition().x - sprite.getWidth() / 2, body.getPosition().y - sprite.getHeight() / 2);
-				sprite.setRotation(body.getAngle() * MathUtils.radiansToDegrees);
-				sprite.draw(batch);
-			}}
-		batch.end();
+                sprite.setPosition(body.getPosition().x - sprite.getWidth() / 2, body.getPosition().y - sprite.getHeight() / 2);
+                sprite.setRotation(body.getAngle() * MathUtils.radiansToDegrees);
+                sprite.draw(batch);
+            }
+        }
+        batch.end();
 
 
-		stage.act(delta);
-        sebbseg_ki.setText("KM/H: " +(int)Math.sqrt(Math.pow((car.vissza().x+car.vissza().y),2)));
+        stage.act(delta);
+        sebbseg_ki.setText("KM/H: " + (int) Math.sqrt(Math.pow((car.vissza().x + car.vissza().y), 2)));
 
         stage.draw();
-		System.out.println(car.vissza().x+" "+car.vissza().y);
-		//debugRenderer.render(world, camera.combined); // hogy lássuk a mesh-t
-	}
+        System.out.println(car.vissza().x + " " + car.vissza().y);
+        debugRenderer.render(world, camera.combined); // hogy lássuk a mesh-t
+    }
 
-	@Override
-	public void resize(int width, int height) {
-		camera.viewportWidth = width / 25;
-		camera.viewportHeight = height / 25;
+    @Override
+    public void resize(int width, int height) {
+        camera.viewportWidth = width / 25;
+        camera.viewportHeight = height / 25;
 
-	}
+    }
 
-	@Override
-	public void show() {
-		stage = new Stage();
+    @Override
+    public void show() {
+        stage = new Stage();
 
-		Gdx.input.setInputProcessor(stage);
+        Gdx.input.setInputProcessor(stage);
 
-		skin = new Skin(Gdx.files.internal("ui/menuSkin.json"), new TextureAtlas("ui/atlas.pack"));
+        skin = new Skin(Gdx.files.internal("ui/menuSkin.json"), new TextureAtlas("ui/atlas.pack"));
 
-		table = new Table(skin);
-		table.setFillParent(true);
+        table = new Table(skin);
+        table.setFillParent(true);
         table.left().top();
-		world = new World(new Vector2(0, -9.81f), true);
-		debugRenderer = new Box2DDebugRenderer();
-		batch = new SpriteBatch();
+        world = new World(new Vector2(-3.25f, -6.81f), true);
+        debugRenderer = new Box2DDebugRenderer();
+        batch = new SpriteBatch();
 
-		camera = new OrthographicCamera();
+        camera = new OrthographicCamera();
 
-		BodyDef bodyDef = new BodyDef();
-		FixtureDef fixtureDef = new FixtureDef(), wheelFixtureDef = new FixtureDef();
+        BodyDef bodyDef = new BodyDef();
+        FixtureDef fixtureDef = new FixtureDef(), wheelFixtureDef = new FixtureDef();
 
-		// car
-		fixtureDef.density = 5;
-		fixtureDef.friction = .4f;
-		fixtureDef.restitution = .3f;
+        // car
+        fixtureDef.density = 5;
+        fixtureDef.friction = .4f;
+        fixtureDef.restitution = .3f;
 
-		wheelFixtureDef.density = fixtureDef.density * 1.5f;
-		wheelFixtureDef.friction = 50;
-		wheelFixtureDef.restitution = .4f;
+        wheelFixtureDef.density = fixtureDef.density * 1.5f;
+        wheelFixtureDef.friction = 50;
+        wheelFixtureDef.restitution = .4f;
 
-		car = new Car(world, fixtureDef, wheelFixtureDef, 0, 3, 3, 1.25f);
+        car = new Car(world, fixtureDef, wheelFixtureDef, 0, 3, 3, 1.25f);
         car1 = new Car(world, fixtureDef, wheelFixtureDef, 5, 3, 3, 1.25f);
 
 
-		Gdx.input.setInputProcessor(new InputMultiplexer(new InputAdapter() {
+        Gdx.input.setInputProcessor(new InputMultiplexer(new InputAdapter() {
 
-			@Override
-			public boolean keyDown(int keycode) {
-				switch (keycode) {
-					case Keys.ESCAPE:
-						((Game) Gdx.app.getApplicationListener()).setScreen(new LevelMenu());
-						break;
-				}
-				return false;
-			}
+            @Override
+            public boolean keyDown(int keycode) {
+                switch (keycode) {
+                    case Keys.ESCAPE:
+                        ((Game) Gdx.app.getApplicationListener()).setScreen(new LevelMenu());
+                        break;
+                }
+                return false;
+            }
 
-			@Override
-			public boolean scrolled(int amount) {
-				camera.zoom += amount / 25f;
-				return true;
-			}
+            @Override
+            public boolean scrolled(int amount) {
+                camera.zoom += amount / 25f;
+                return true;
+            }
 
-		}, car));
+        }, car));
 
-		// GROUND
-		// body definition
-		bodyDef.type = BodyType.StaticBody;
-		bodyDef.position.set(0, -5f);
+        // GROUND
+        // body definition
+        bodyDef.type = BodyType.KinematicBody;
+        bodyDef.position.set(0, -5f);
+        bodyDef.angle = 320;
 
-		// ground shape
+        // ground shape
         PolygonShape groundShape = new PolygonShape();
-		groundShape.setAsBox(25f, 5f);
+        groundShape.setAsBox(25f, 5f);
 
+        //groundShape.setRadius(50);
 
         // fixture definition
-		fixtureDef.shape = groundShape;
-		fixtureDef.friction = .5f;
-		fixtureDef.restitution = 0;
+        fixtureDef.shape = groundShape;
+        fixtureDef.friction = .5f;
+        fixtureDef.restitution = 0;
 
 
         //föld textura fel "húzása"
@@ -165,36 +168,36 @@ public class Play implements Screen {
         boxSprite.setSize(50f, 9.8f);
         boxSprite.setOrigin(boxSprite.getWidth() / 2, boxSprite.getHeight() / 2);
 
-		ground = world.createBody(bodyDef);
-		ground.createFixture(fixtureDef);
-		ground.setUserData(boxSprite);
+        ground = world.createBody(bodyDef);
+        ground.createFixture(fixtureDef);
+        ground.setUserData(boxSprite);
 
-		groundShape.dispose();
+        groundShape.dispose();
 
-		//szöveg ki írás
+        //szöveg ki írás
 
-        sebbseg_ki=new Label("KM/H: "+car.vissza().x, skin, "big");
-		table.add(sebbseg_ki).padLeft(25);
-		stage.addActor(table);
-	}
+        sebbseg_ki = new Label("KM/H: " + car.vissza().x, skin, "big");
+        table.add(sebbseg_ki).padLeft(25);
+        stage.addActor(table);
+    }
 
-	@Override
-	public void hide() {
-		dispose();
-	}
+    @Override
+    public void hide() {
+        dispose();
+    }
 
-	@Override
-	public void pause() {
-	}
+    @Override
+    public void pause() {
+    }
 
-	@Override
-	public void resume() {
-	}
+    @Override
+    public void resume() {
+    }
 
-	@Override
-	public void dispose() {
-		world.dispose();
-		debugRenderer.dispose();
-	}
+    @Override
+    public void dispose() {
+        world.dispose();
+        debugRenderer.dispose();
+    }
 
 }
