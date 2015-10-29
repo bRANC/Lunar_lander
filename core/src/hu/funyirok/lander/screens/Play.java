@@ -81,7 +81,7 @@ public class Play implements Screen {
         sebbseg_ki.setText("KM/H: " + (int) Math.sqrt(Math.pow((car.vissza().x + car.vissza().y), 2)));
 
         stage.draw();
-        System.out.println(car.vissza().x + " " + car.vissza().y);
+
         debugRenderer.render(world, camera.combined); // hogy lássuk a mesh-t
     }
 

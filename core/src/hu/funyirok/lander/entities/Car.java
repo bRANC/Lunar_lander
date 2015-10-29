@@ -97,17 +97,23 @@ public class Car extends InputAdapter {
     }
 
     public void mozgas() {
+        System.out.println(chassis.getAngularDamping()+"  "+chassis.getAngularVelocity() +"  "+chassis.getInertia());
         if (fel) {
-            chassis.applyLinearImpulse(motorSpeed / 5, motorSpeed / 5, chassis.getMassData().center.x, chassis.getMassData().center.y,true);
+          //  chassis.applyLinearImpulse(motorSpeed / 5, motorSpeed / 5, chassis.getLocalCenter().x, chassis.getLocalCenter().y,true);
+        //chassis.appl
         }
         if (le) {
-            chassis.applyLinearImpulse(-motorSpeed / 5, -motorSpeed / 5, chassis.getMassData().center.x, chassis.getMassData().center.y,true);
+          //  chassis.applyLinearImpulse(-motorSpeed / 5, -motorSpeed / 5, chassis.getLocalCenter().x, chassis.getLocalCenter().y,true);
         }
         if (bal) {
-            chassis.applyAngularImpulse(-25, true);
-        }
+            chassis.applyAngularImpulse(-5f, true);
+        }/*else{
+            chassis.setFixedRotation(true);
+            chassis.setFixedRotation(false);
+        }*/
+
         if (jobb) {
-            chassis.applyAngularImpulse(25,true);
+            chassis.applyAngularImpulse(5f,true);
         }
     }
 
