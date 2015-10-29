@@ -23,7 +23,7 @@ public class Car extends InputAdapter {
     private SpriteBatch batch;
     private Sprite boxSprite;
     private Sprite wheelSprite;
-    private boolean fel = false, le = false;
+    private boolean fel = false, le = false,bal=false,jobb=false;
 
     public Car(World world, FixtureDef chassisFixtureDef, FixtureDef wheelFixtureDef, float x, float y, float width, float height) {
 
@@ -80,25 +80,34 @@ public class Car extends InputAdapter {
 
         // left axis
         WheelJointDef axisDef = new WheelJointDef();
-        axisDef.bodyA = chassis;
-        axisDef.bodyB = leftStick;
+        //axisDef.bodyA = chassis;
+       //axisDef.bodyB = leftStick;
         axisDef.localAnchorA.set(-width / 2 * .35f + lander_stick.getRadius(), -height / 2 * 3f);
         axisDef.frequencyHz = chassisFixtureDef.density;
         axisDef.localAxisA.set(Vector2.Y);
         axisDef.maxMotorTorque = chassisFixtureDef.density * 10;
         axisDef.localAnchorA.x *= 2;
-        leftAxis = (WheelJoint) world.createJoint(axisDef);
+//        leftAxis = (WheelJoint) world.createJoint(axisDef);
 
         // right axis
-        axisDef.bodyB = rightWheel;
+        //axisDef.bodyB = rightWheel;
         axisDef.localAnchorA.x *= -1;
 
-        rightAxis = (WheelJoint) world.createJoint(axisDef);
+ //       rightAxis = (WheelJoint) world.createJoint(axisDef);
     }
 
     public void mozgas() {
         if (fel) {
-            chassis.applyLinearImpulse(motorSpeed/2, motorSpeed/2, chassis.getMassData().center.x, chassis.getMassData().center.y, true);
+            chassis.applyLinearImpulse(motorSpeed / 5, motorSpeed / 5, chassis.getMassData().center.x, chassis.getMassData().center.y,true);
+        }
+        if (le) {
+            chassis.applyLinearImpulse(-motorSpeed / 5, -motorSpeed / 5, chassis.getMassData().center.x, chassis.getMassData().center.y,true);
+        }
+        if (bal) {
+            chassis.applyAngularImpulse(-25, true);
+        }
+        if (jobb) {
+            chassis.applyAngularImpulse(25,true);
         }
     }
 
@@ -115,6 +124,16 @@ public class Car extends InputAdapter {
                 break;
             case Keys.UP:
                 fel = true;
+                break;
+            case Keys.LEFT:
+                bal = true;
+                break;
+            case Keys.RIGHT:
+                jobb = true;
+                break;
+            case Keys.DOWN:
+                le = true;
+                break;
         }
         return true;
     }
@@ -133,6 +152,16 @@ public class Car extends InputAdapter {
                 break;
             case Keys.UP:
                 fel = false;
+                break;
+            case Keys.LEFT:
+                bal = false;
+                break;
+            case Keys.RIGHT:
+                jobb = false;
+                break;
+            case Keys.DOWN:
+                le = false;
+                break;
         }
         return true;
     }
