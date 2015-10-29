@@ -23,8 +23,9 @@ public class Car extends InputAdapter {
     private SpriteBatch batch;
     private Sprite boxSprite;
     private Sprite wheelSprite;
-    private boolean fel = false, le = false,bal=false,jobb=false;
+    private boolean fel = false, le = false, bal = false, jobb = false;
 
+    //http://gamedev.stackexchange.com/questions/84429/box2d-and-libgdx-attach-particleeffect-to-body
     public Car(World world, FixtureDef chassisFixtureDef, FixtureDef wheelFixtureDef, float x, float y, float width, float height) {
 
 
@@ -81,7 +82,7 @@ public class Car extends InputAdapter {
         // left axis
         WheelJointDef axisDef = new WheelJointDef();
         //axisDef.bodyA = chassis;
-       //axisDef.bodyB = leftStick;
+        //axisDef.bodyB = leftStick;
         axisDef.localAnchorA.set(-width / 2 * .35f + lander_stick.getRadius(), -height / 2 * 3f);
         axisDef.frequencyHz = chassisFixtureDef.density;
         axisDef.localAxisA.set(Vector2.Y);
@@ -93,17 +94,24 @@ public class Car extends InputAdapter {
         //axisDef.bodyB = rightWheel;
         axisDef.localAnchorA.x *= -1;
 
- //       rightAxis = (WheelJoint) world.createJoint(axisDef);
+        //       rightAxis = (WheelJoint) world.createJoint(axisDef);
     }
 
+    public double angel;
+    public int tobszorose = 0, szorzo;
+    public boolean motva = false;
+
+    //minden eggyes render kockában meg hívva
     public void mozgas() {
-        System.out.println(chassis.getAngularDamping()+"  "+chassis.getAngularVelocity() +"  "+chassis.getInertia());
+        angel = chassis.getAngle();//radiánban adja meg
+        angel = (angel * 180) / Math.PI;//fokba alakítás
+
+
         if (fel) {
-          //  chassis.applyLinearImpulse(motorSpeed / 5, motorSpeed / 5, chassis.getLocalCenter().x, chassis.getLocalCenter().y,true);
-        //chassis.appl
+            chassis.applyLinearImpulse(0, motorSpeed, chassis.getWorldCenter().x, chassis.getWorldCenter().y, true);
         }
         if (le) {
-          //  chassis.applyLinearImpulse(-motorSpeed / 5, -motorSpeed / 5, chassis.getLocalCenter().x, chassis.getLocalCenter().y,true);
+            chassis.applyLinearImpulse(0, -motorSpeed, chassis.getWorldCenter().x, chassis.getWorldCenter().y, true);
         }
         if (bal) {
             chassis.applyAngularImpulse(-5f, true);
@@ -113,7 +121,7 @@ public class Car extends InputAdapter {
         }*/
 
         if (jobb) {
-            chassis.applyAngularImpulse(5f,true);
+            chassis.applyAngularImpulse(5f, true);
         }
     }
 

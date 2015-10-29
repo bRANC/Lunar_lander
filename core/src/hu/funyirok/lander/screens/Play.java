@@ -103,7 +103,8 @@ public class Play implements Screen {
         table = new Table(skin);
         table.setFillParent(true);
         table.left().top();
-        world = new World(new Vector2(-3.25f, -6.81f), true);
+        //world = new World(new Vector2(-3.25f, -6.81f), true); //meg dönti a gravitációt
+        world = new World(new Vector2(0, -9f), true);
         debugRenderer = new Box2DDebugRenderer();
         batch = new SpriteBatch();
 
@@ -122,7 +123,7 @@ public class Play implements Screen {
         wheelFixtureDef.restitution = .4f;
 
         car = new Car(world, fixtureDef, wheelFixtureDef, 0, 3, 3, 1.25f);
-        car1 = new Car(world, fixtureDef, wheelFixtureDef, 5, 3, 3, 1.25f);
+        //car1 = new Car(world, fixtureDef, wheelFixtureDef, 5, 3, 3, 1.25f);
 
 
         Gdx.input.setInputProcessor(new InputMultiplexer(new InputAdapter() {
@@ -149,7 +150,8 @@ public class Play implements Screen {
         // body definition
         bodyDef.type = BodyType.KinematicBody;
         bodyDef.position.set(0, -5f);
-        bodyDef.angle = 320;
+        //bodyDef.angle = 320;//megdöntött
+
 
         // ground shape
         PolygonShape groundShape = new PolygonShape();
@@ -168,9 +170,28 @@ public class Play implements Screen {
         boxSprite.setSize(50f, 9.8f);
         boxSprite.setOrigin(boxSprite.getWidth() / 2, boxSprite.getHeight() / 2);
 
+
+
+
         ground = world.createBody(bodyDef);
         ground.createFixture(fixtureDef);
         ground.setUserData(boxSprite);
+
+        groundShape.setAsBox(5f, 25f);
+        bodyDef.position.set(30f, 15);
+        world.createBody(bodyDef).createFixture(fixtureDef);
+
+        bodyDef.position.set(-30f, 15);
+
+        world.createBody(bodyDef).createFixture(fixtureDef);
+
+        groundShape.setAsBox(25f, 2f);
+        bodyDef.position.set(0, 40);
+        world.createBody(bodyDef).createFixture(fixtureDef);
+
+
+
+
 
         groundShape.dispose();
 
