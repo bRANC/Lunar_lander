@@ -1,7 +1,5 @@
 package hu.funyirok.lander.screens;
 
-import hu.funyirok.lander.entities.Car;
-
 import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input.Keys;
@@ -20,7 +18,11 @@ import com.badlogic.gdx.physics.box2d.Body;
 import com.badlogic.gdx.physics.box2d.BodyDef;
 import com.badlogic.gdx.physics.box2d.BodyDef.BodyType;
 import com.badlogic.gdx.physics.box2d.Box2DDebugRenderer;
+import com.badlogic.gdx.physics.box2d.Contact;
+import com.badlogic.gdx.physics.box2d.ContactImpulse;
+import com.badlogic.gdx.physics.box2d.ContactListener;
 import com.badlogic.gdx.physics.box2d.FixtureDef;
+import com.badlogic.gdx.physics.box2d.Manifold;
 import com.badlogic.gdx.physics.box2d.PolygonShape;
 import com.badlogic.gdx.physics.box2d.World;
 import com.badlogic.gdx.scenes.scene2d.Stage;
@@ -29,7 +31,11 @@ import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.utils.Array;
 
-public class Play implements Screen {
+import java.util.Stack;
+
+import hu.funyirok.lander.entities.Car;
+
+public class Play implements Screen, ContactListener {
 
     private Stage stage;
     private Table table;
@@ -45,9 +51,10 @@ public class Play implements Screen {
     private final int VELOCITYITERATIONS = 8, POSITIONITERATIONS = 3;
     private Sprite boxSprite;
     private Car car, car1;
-    private Label sebbseg_ki;
-    private boolean ready=false;
+    private Label sebbseg_ki, x_ki, y_ki;
+    private boolean ready = false;
     private Array<Body> tmpBodies = new Array<Body>();
+    public boolean foldon_l = false, foldon_r = false;
 
     @Override
     public void render(float delta) {
@@ -56,8 +63,8 @@ public class Play implements Screen {
 
         world.step(TIMESTEP, VELOCITYITERATIONS, POSITIONITERATIONS);
 
-        if(ready) {
-            car.mozgas();
+        if (ready) {
+            car.mozgas(foldon_l, foldon_r);
         }
         camera.position.set(car.getChassis().getPosition().x, car.getChassis().getPosition().y /*- Gdx.graphics.getHeight()/4*/, 0);
         camera.update();
@@ -78,10 +85,12 @@ public class Play implements Screen {
             }
         }
         batch.end();
-        ready=true;
+        ready = true;
 
         stage.act(delta);
-        sebbseg_ki.setText("KM/H: " + (int) Math.sqrt(Math.pow((car.vissza().x + car.vissza().y), 2)));
+        sebbseg_ki.setText("x+y M/s: " + (int) (Math.sqrt(Math.pow((car.vissza().x), 2)) + Math.sqrt(Math.pow((car.vissza().y), 2))));
+        x_ki.setText("x M/s: " + (int) car.vissza().x);
+        y_ki.setText("y M/s: " + (int) car.vissza().y);
 
         stage.draw();
 
@@ -125,7 +134,7 @@ public class Play implements Screen {
         wheelFixtureDef.friction = 50;
         wheelFixtureDef.restitution = .4f;
 
-        car = new Car(world, fixtureDef, wheelFixtureDef, 0, 3, 3, 1.25f);
+        car = new Car(world, fixtureDef, wheelFixtureDef, 0, 300, 3, 1.25f);
         //car1 = new Car(world, fixtureDef, wheelFixtureDef, 5, 3, 3, 1.25f);
 
 
@@ -158,7 +167,7 @@ public class Play implements Screen {
 
         // ground shape
         PolygonShape groundShape = new PolygonShape();
-        groundShape.setAsBox(25f, 5f);
+        groundShape.setAsBox(100f, 5f);
 
         //groundShape.setRadius(50);
 
@@ -170,10 +179,8 @@ public class Play implements Screen {
 
         //föld textura fel "húzása"
         boxSprite = new Sprite(new Texture("img/splash.png"));
-        boxSprite.setSize(50f, 9.8f);
+        boxSprite.setSize(200f, 9.8f);
         boxSprite.setOrigin(boxSprite.getWidth() / 2, boxSprite.getHeight() / 2);
-
-
 
 
         ground = world.createBody(bodyDef);
@@ -182,29 +189,75 @@ public class Play implements Screen {
 
         groundShape.setAsBox(5f, 25f);
         bodyDef.position.set(30f, 15);
-        world.createBody(bodyDef).createFixture(fixtureDef);
+        // world.createBody(bodyDef).createFixture(fixtureDef);
 
         bodyDef.position.set(-30f, 15);
 
-        world.createBody(bodyDef).createFixture(fixtureDef);
+        //world.createBody(bodyDef).createFixture(fixtureDef);
 
         groundShape.setAsBox(25f, 2f);
         bodyDef.position.set(0, 40);
-        world.createBody(bodyDef).createFixture(fixtureDef);
-
-
-
+        //world.createBody(bodyDef).createFixture(fixtureDef);
 
 
         groundShape.dispose();
 
         //szöveg ki írás
-
-        sebbseg_ki = new Label("KM/H: " + car.vissza().x, skin, "big");
+        x_ki = new Label("M/s: " + car.vissza().x, skin, "big");
+        table.add(x_ki).padLeft(25).row();
+        y_ki = new Label("M/s: " + car.vissza().y, skin, "big");
+        table.add(y_ki).padLeft(25).row();
+        sebbseg_ki = new Label("M/s: " + (car.vissza().x + car.vissza().y), skin, "big");
         table.add(sebbseg_ki).padLeft(25);
         stage.addActor(table);
+        ground.getFixtureList().get(0).setUserData("g");
+        world.setContactListener(this);
         //ready=true;
     }
+
+
+    //
+    private Stack<Contact> contacts = new Stack<Contact>();
+
+    @Override
+    public void beginContact(Contact contact) {
+
+        Body a = contact.getFixtureA().getBody();
+        Body b = contact.getFixtureB().getBody();
+
+        if (contact.getFixtureA().getUserData().equals("l") && contact.getFixtureB().getUserData().equals("g")) {
+            foldon_l = true;
+        }
+        if (contact.getFixtureA().getUserData().equals("r") && contact.getFixtureB().getUserData().equals("g")) {
+            foldon_r = true;
+        }
+
+    }
+
+    @Override
+    public void endContact(Contact contact) {
+        Body a = contact.getFixtureA().getBody();
+        Body b = contact.getFixtureB().getBody();
+
+        if (contact.getFixtureA().getUserData().equals("l") && contact.getFixtureB().getUserData().equals("g")) {
+            foldon_l = false;
+        }
+        if (contact.getFixtureA().getUserData().equals("r") && contact.getFixtureB().getUserData().equals("g")) {
+            foldon_r = false;
+        }
+    }
+
+    @Override
+    public void preSolve(Contact contact, Manifold oldManifold) {
+
+
+    }
+
+    @Override
+    public void postSolve(Contact contact, ContactImpulse impulse) {
+
+    }
+
 
     @Override
     public void hide() {
@@ -224,5 +277,4 @@ public class Play implements Screen {
         world.dispose();
         debugRenderer.dispose();
     }
-
 }
