@@ -111,8 +111,8 @@ public class Car extends InputAdapter {
     public void mozgas(boolean foldon_l, boolean foldon_r) {
         //angel = (angel * 180) / Math.PI;//fokba alakítás
 
-        irany_y = (float) Math.cos(chassis.getAngle()) * motorSpeed * 8;
-        irany_x = (float) Math.sin(chassis.getAngle()) * motorSpeed * 8;
+        irany_y = (float) Math.cos(chassis.getAngle()) * motorSpeed * 16;
+        irany_x = (float) Math.sin(chassis.getAngle()) * motorSpeed * 16;
 
         if (fel) {
             chassis.applyForce(-irany_x, irany_y, chassis.getWorldCenter().x, chassis.getWorldCenter().y, true);

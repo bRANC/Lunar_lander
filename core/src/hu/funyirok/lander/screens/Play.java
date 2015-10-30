@@ -227,10 +227,28 @@ public class Play implements Screen, ContactListener {
 
         if (contact.getFixtureA().getUserData().equals("l") && contact.getFixtureB().getUserData().equals("g")) {
             foldon_l = true;
+            if ((Math.sqrt(Math.pow((car.vissza_left().x), 2)) + Math.sqrt(Math.pow((car.vissza_left().y), 2))) > 10) {
+//vesztett
+                System.out.println("túlgyors");
+            }else{
+                System.out.println("jólesz");
+            }
         }
         if (contact.getFixtureA().getUserData().equals("r") && contact.getFixtureB().getUserData().equals("g")) {
             foldon_r = true;
+            if ((Math.sqrt(Math.pow((car.vissza_right().x), 2)) + Math.sqrt(Math.pow((car.vissza_right().y), 2))) > 10) {
+                System.out.println("túlgyors");
+                //vesztett
+            }else {
+                System.out.println("jólesz");
+            }
+
         }
+        if (contact.getFixtureA().getUserData().equals("c") && contact.getFixtureB().getUserData().equals("g")) {
+            System.out.println("főborult");
+        }
+
+
 
     }
 
