@@ -19,12 +19,14 @@ public class Car extends InputAdapter {
 
     private Body chassis, leftStick, rightWheel;
     private WheelJoint leftAxis, rightAxis;
-    private float motorSpeed = 75;
+    private float motorSpeed = 30;
     private SpriteBatch batch;
     private Sprite boxSprite;
     private Sprite wheelSprite;
     private boolean fel = false, le = false, bal = false, jobb = false;
-
+    public double angel;
+    public float irany_x,irany_y;
+    private Vector2 direction;
     //http://gamedev.stackexchange.com/questions/84429/box2d-and-libgdx-attach-particleeffect-to-body
     public Car(World world, FixtureDef chassisFixtureDef, FixtureDef wheelFixtureDef, float x, float y, float width, float height) {
 
@@ -97,21 +99,32 @@ public class Car extends InputAdapter {
         //       rightAxis = (WheelJoint) world.createJoint(axisDef);
     }
 
-    public double angel;
-    public int tobszorose = 0, szorzo;
-    public boolean motva = false;
 
     //minden eggyes render kockában meg hívva
     public void mozgas() {
-        angel = chassis.getAngle();//radiánban adja meg
-        angel = (angel * 180) / Math.PI;//fokba alakítás
+        //angel = (angel * 180) / Math.PI;//fokba alakítás
+        /*try {
 
+            direction.x =((float)Math.cos(chassis.getAngle()));
+            direction.y =((float)Math.sin(chassis.getAngle()));
+        }catch (Exception e){
+            System.out.println("valami van "+e);
+        }*/
+        irany_y = (float) Math.cos(chassis.getAngle())*motorSpeed;
+        irany_x = (float) Math.sin(chassis.getAngle())*motorSpeed;
+
+       /* try {
+            direction.add((float) chassis.getAngle(), (float) chassis.getAngle());
+        } catch (Exception e) {
+            System.out.println("valami van " + e);
+        }
+*/
 
         if (fel) {
-            chassis.applyLinearImpulse(0, motorSpeed, chassis.getWorldCenter().x, chassis.getWorldCenter().y, true);
+            chassis.applyLinearImpulse(-irany_x, irany_y, chassis.getWorldCenter().x, chassis.getWorldCenter().y, true);
         }
         if (le) {
-            chassis.applyLinearImpulse(0, -motorSpeed, chassis.getWorldCenter().x, chassis.getWorldCenter().y, true);
+            chassis.applyLinearImpulse(irany_x, -irany_y, chassis.getWorldCenter().x, chassis.getWorldCenter().y, true);
         }
         if (bal) {
             chassis.applyAngularImpulse(-5f, true);

@@ -46,7 +46,7 @@ public class Play implements Screen {
     private Sprite boxSprite;
     private Car car, car1;
     private Label sebbseg_ki;
-
+    private boolean ready=false;
     private Array<Body> tmpBodies = new Array<Body>();
 
     @Override
@@ -55,7 +55,10 @@ public class Play implements Screen {
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 
         world.step(TIMESTEP, VELOCITYITERATIONS, POSITIONITERATIONS);
-        car.mozgas();
+
+        if(ready) {
+            car.mozgas();
+        }
         camera.position.set(car.getChassis().getPosition().x, car.getChassis().getPosition().y /*- Gdx.graphics.getHeight()/4*/, 0);
         camera.update();
 
@@ -75,7 +78,7 @@ public class Play implements Screen {
             }
         }
         batch.end();
-
+        ready=true;
 
         stage.act(delta);
         sebbseg_ki.setText("KM/H: " + (int) Math.sqrt(Math.pow((car.vissza().x + car.vissza().y), 2)));
@@ -200,6 +203,7 @@ public class Play implements Screen {
         sebbseg_ki = new Label("KM/H: " + car.vissza().x, skin, "big");
         table.add(sebbseg_ki).padLeft(25);
         stage.addActor(table);
+        //ready=true;
     }
 
     @Override
