@@ -273,7 +273,7 @@ public class Play implements Screen, ContactListener {
 
     @Override
     public void postSolve(Contact contact, ContactImpulse impulse) {
-
+        //rocket wheeljoint break ha bal akkor bal ha jobb akkor jobb
     }
 
 
