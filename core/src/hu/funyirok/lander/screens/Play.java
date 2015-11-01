@@ -33,7 +33,7 @@ import com.badlogic.gdx.utils.Array;
 
 import java.util.Stack;
 
-import hu.funyirok.lander.entities.Car;
+import hu.funyirok.lander.entities.Rocket;
 
 public class Play implements Screen, ContactListener {
 
@@ -50,7 +50,7 @@ public class Play implements Screen, ContactListener {
     private final float TIMESTEP = 1 / 60f;
     private final int VELOCITYITERATIONS = 8, POSITIONITERATIONS = 3;
     private Sprite boxSprite;
-    private Car car, car1;
+    private Rocket rocket, rocket1;
     private Label sebbseg_ki, x_ki, y_ki;
     private boolean ready = false;
     private Array<Body> tmpBodies = new Array<Body>();
@@ -64,9 +64,9 @@ public class Play implements Screen, ContactListener {
         world.step(TIMESTEP, VELOCITYITERATIONS, POSITIONITERATIONS);
 
         if (ready) {
-            car.mozgas(foldon_l, foldon_r);
+            rocket.mozgas(foldon_l, foldon_r);
         }
-        camera.position.set(car.getChassis().getPosition().x, car.getChassis().getPosition().y /*- Gdx.graphics.getHeight()/4*/, 0);
+        camera.position.set(rocket.getChassis().getPosition().x, rocket.getChassis().getPosition().y /*- Gdx.graphics.getHeight()/4*/, 0);
         camera.update();
 
         batch.setProjectionMatrix(camera.combined);
@@ -88,9 +88,9 @@ public class Play implements Screen, ContactListener {
         ready = true;
 
         stage.act(delta);
-        sebbseg_ki.setText("x+y M/s: " + (int) (Math.sqrt(Math.pow((car.vissza().x), 2)) + Math.sqrt(Math.pow((car.vissza().y), 2))));
-        x_ki.setText("x M/s: " + (int) car.vissza().x);
-        y_ki.setText("y M/s: " + (int) car.vissza().y);
+        sebbseg_ki.setText("x+y M/s: " + (int) (Math.sqrt(Math.pow((rocket.vissza().x), 2)) + Math.sqrt(Math.pow((rocket.vissza().y), 2))));
+        x_ki.setText("x M/s: " + (int) rocket.vissza().x);
+        y_ki.setText("y M/s: " + (int) rocket.vissza().y);
 
         stage.draw();
 
@@ -125,7 +125,7 @@ public class Play implements Screen, ContactListener {
         BodyDef bodyDef = new BodyDef();
         FixtureDef fixtureDef = new FixtureDef(), wheelFixtureDef = new FixtureDef();
 
-        // car
+        // rocket
         fixtureDef.density = 5;
         fixtureDef.friction = .4f;
         fixtureDef.restitution = .3f;
@@ -134,8 +134,8 @@ public class Play implements Screen, ContactListener {
         wheelFixtureDef.friction = 50;
         wheelFixtureDef.restitution = .4f;
 
-        car = new Car(world, fixtureDef, wheelFixtureDef, 0, 300, 3, 1.25f);
-        //car1 = new Car(world, fixtureDef, wheelFixtureDef, 5, 3, 3, 1.25f);
+        rocket = new Rocket(world, fixtureDef, wheelFixtureDef, 0, 300, 3, 1.25f);
+
 
 
         Gdx.input.setInputProcessor(new InputMultiplexer(new InputAdapter() {
@@ -156,7 +156,7 @@ public class Play implements Screen, ContactListener {
                 return true;
             }
 
-        }, car));
+        }, rocket));
 
         // GROUND
         // body definition
@@ -203,11 +203,11 @@ public class Play implements Screen, ContactListener {
         groundShape.dispose();
 
         //szöveg ki írás
-        x_ki = new Label("M/s: " + car.vissza().x, skin, "big");
+        x_ki = new Label("M/s: " + rocket.vissza().x, skin, "big");
         table.add(x_ki).padLeft(25).row();
-        y_ki = new Label("M/s: " + car.vissza().y, skin, "big");
+        y_ki = new Label("M/s: " + rocket.vissza().y, skin, "big");
         table.add(y_ki).padLeft(25).row();
-        sebbseg_ki = new Label("M/s: " + (car.vissza().x + car.vissza().y), skin, "big");
+        sebbseg_ki = new Label("M/s: " + (rocket.vissza().x + rocket.vissza().y), skin, "big");
         table.add(sebbseg_ki).padLeft(25);
         stage.addActor(table);
         ground.getFixtureList().get(0).setUserData("g");
@@ -227,7 +227,7 @@ public class Play implements Screen, ContactListener {
 
         if (contact.getFixtureA().getUserData().equals("l") && contact.getFixtureB().getUserData().equals("g")) {
             foldon_l = true;
-            if ((Math.sqrt(Math.pow((car.vissza_left().x), 2)) + Math.sqrt(Math.pow((car.vissza_left().y), 2))) > 10) {
+            if ((Math.sqrt(Math.pow((rocket.vissza_left().x), 2)) + Math.sqrt(Math.pow((rocket.vissza_left().y), 2))) > 10) {
 //vesztett
                 System.out.println("túlgyors");
             }else{
@@ -236,7 +236,7 @@ public class Play implements Screen, ContactListener {
         }
         if (contact.getFixtureA().getUserData().equals("r") && contact.getFixtureB().getUserData().equals("g")) {
             foldon_r = true;
-            if ((Math.sqrt(Math.pow((car.vissza_right().x), 2)) + Math.sqrt(Math.pow((car.vissza_right().y), 2))) > 10) {
+            if ((Math.sqrt(Math.pow((rocket.vissza_right().x), 2)) + Math.sqrt(Math.pow((rocket.vissza_right().y), 2))) > 10) {
                 System.out.println("túlgyors");
                 //vesztett
             }else {

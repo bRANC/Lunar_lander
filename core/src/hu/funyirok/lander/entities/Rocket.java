@@ -15,7 +15,7 @@ import com.badlogic.gdx.physics.box2d.World;
 import com.badlogic.gdx.physics.box2d.joints.WheelJoint;
 import com.badlogic.gdx.physics.box2d.joints.WheelJointDef;
 
-public class Car extends InputAdapter {
+public class Rocket extends InputAdapter {
 
     public Body chassis, leftStick, rightStick;
     private WheelJoint leftAxis, rightAxis;
@@ -29,7 +29,7 @@ public class Car extends InputAdapter {
     private Vector2 direction;
 
     //http://gamedev.stackexchange.com/questions/84429/box2d-and-libgdx-attach-particleeffect-to-body
-    public Car(World world, FixtureDef chassisFixtureDef, FixtureDef wheelFixtureDef, float x, float y, float width, float height) {
+    public Rocket(World world, FixtureDef chassisFixtureDef, FixtureDef wheelFixtureDef, float x, float y, float width, float height) {
 
 
         BodyDef bodyDef = new BodyDef();
