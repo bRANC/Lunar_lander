@@ -57,14 +57,14 @@ public class Play implements Screen, ContactListener {
     private boolean ready = false;
     private Array<Body> tmpBodies = new Array<Body>();
     public boolean foldon_l = false, foldon_r = false;
-    public Body test_destroy;
+    public Body test_joints_destroy;
 
     @Override
     public void render(float delta) {
         Gdx.gl.glClearColor(0, 0, 0, 1);
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
-        if (!world.isLocked()&& test_destroy!=null){
-            removeBodySafely();
+        if (!world.isLocked()&& test_joints_destroy !=null){
+            removeJointSafely();
         }
         world.step(TIMESTEP, VELOCITYITERATIONS, POSITIONITERATIONS);
 
@@ -275,26 +275,22 @@ public class Play implements Screen, ContactListener {
         YourCustomUserData dataB = (YourCustomUserData) contact.getFixtureB().getUserData();
         if (dataA.forcollison.contains("l") && dataB.forcollison.contains("g") || dataA.forcollison.equals("g") && dataB.forcollison.equals("l")) {
             if ((Math.sqrt(Math.pow((rocket.vissza_left().x), 2)) + Math.sqrt(Math.pow((rocket.vissza_left().y), 2))) > 10) {
-                test_destroy=contact.getFixtureA().getBody();
+                test_joints_destroy =rocket.leftStick;
             }
         }
         if (dataA.forcollison.contains("r") && dataB.forcollison.contains("g") || dataA.forcollison.equals("g") && dataB.forcollison.equals("r")) {
             if ((Math.sqrt(Math.pow((rocket.vissza_left().x), 2)) + Math.sqrt(Math.pow((rocket.vissza_left().y), 2))) > 10) {
-                test_destroy=contact.getFixtureA().getBody();
+                test_joints_destroy =rocket.rightStick;
             }
         }
     }
 
-    public void removeBodySafely() {
-        final Array<JointEdge> list = test_destroy.getJointList();
+    public void removeJointSafely() {
+        final Array<JointEdge> list = test_joints_destroy.getJointList();
         while (list.size > 0) {
-            System.out.println("destroyjoint");
             world.destroyJoint(list.get(0).joint);
-            System.out.println("destroyed jointed");
-            test_destroy=null;
+            test_joints_destroy =null;
         }
-        // actual remove
-        //world.destroyBody(body);
     }
 
     @Override
