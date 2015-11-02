@@ -139,7 +139,7 @@ public class Play implements Screen, ContactListener {
         wheelFixtureDef.friction = 50;
         wheelFixtureDef.restitution = .4f;
 
-        rocket = new Rocket(world, fixtureDef, wheelFixtureDef, 0, 300, 3, 1.25f);
+        rocket = new Rocket(world, fixtureDef, wheelFixtureDef, 0, 30, 3, 1.25f);
 
 
         Gdx.input.setInputProcessor(new InputMultiplexer(new InputAdapter() {
@@ -192,12 +192,13 @@ public class Play implements Screen, ContactListener {
         ground.setUserData(boxSprite);
 
         groundShape.setAsBox(5f, 25f);
-        bodyDef.position.set(30f, 15);
-        // world.createBody(bodyDef).createFixture(fixtureDef);
+        YourCustomUserData dataa = new YourCustomUserData();
+        dataa.forcollison = "g";
+        bodyDef.position.set(105f, 15);
+        world.createBody(bodyDef).createFixture(fixtureDef).setUserData(dataa);
 
-        bodyDef.position.set(-30f, 15);
-
-        //world.createBody(bodyDef).createFixture(fixtureDef);
+        bodyDef.position.set(-105f, 15);
+        world.createBody(bodyDef).createFixture(fixtureDef).setUserData(dataa);
 
         groundShape.setAsBox(25f, 2f);
         bodyDef.position.set(0, 40);
@@ -214,8 +215,6 @@ public class Play implements Screen, ContactListener {
         sebbseg_ki = new Label("M/s: " + (rocket.vissza().x + rocket.vissza().y), skin, "big");
         table.add(sebbseg_ki).padLeft(25);
         stage.addActor(table);
-        YourCustomUserData dataa = new YourCustomUserData();
-        dataa.forcollison = "g";
         ground.getFixtureList().get(0).setUserData(dataa);
         world.setContactListener(this);
         //ready=true;

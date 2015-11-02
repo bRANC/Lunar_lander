@@ -116,7 +116,7 @@ public class Rocket extends InputAdapter {
     //minden eggyes render kockában meg hívva
     public void mozgas(boolean foldon_l, boolean foldon_r) {
         //angel = (angel * 180) / Math.PI;//fokba alakítás
-        if (0.05 > Math.sqrt(Math.pow((chassis.getAngularVelocity()), 2))) {//extra stabilitás hogy ne prögöjön mint a pörgő warrior
+        if (0.08 > Math.sqrt(Math.pow((chassis.getAngularVelocity()), 2))) {//extra stabilitás hogy ne prögöjön mint a pörgő warrior
             chassis.setAngularVelocity(0);
         }
        // System.out.println(chassis.getAngularVelocity());
