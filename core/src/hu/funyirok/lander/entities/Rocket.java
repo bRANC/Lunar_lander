@@ -119,7 +119,7 @@ public class Rocket extends InputAdapter {
         if (0.05 > Math.sqrt(Math.pow((chassis.getAngularVelocity()), 2))) {//extra stabilitás hogy ne prögöjön mint a pörgő warrior
             chassis.setAngularVelocity(0);
         }
-        System.out.println(chassis.getAngularVelocity());
+       // System.out.println(chassis.getAngularVelocity());
         irany_y = (float) Math.cos(chassis.getAngle()) * motorSpeed * 16;
         irany_x = (float) Math.sin(chassis.getAngle()) * motorSpeed * 16;
 

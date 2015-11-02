@@ -22,6 +22,7 @@ import com.badlogic.gdx.physics.box2d.Contact;
 import com.badlogic.gdx.physics.box2d.ContactImpulse;
 import com.badlogic.gdx.physics.box2d.ContactListener;
 import com.badlogic.gdx.physics.box2d.FixtureDef;
+import com.badlogic.gdx.physics.box2d.JointEdge;
 import com.badlogic.gdx.physics.box2d.Manifold;
 import com.badlogic.gdx.physics.box2d.PolygonShape;
 import com.badlogic.gdx.physics.box2d.World;
@@ -56,12 +57,15 @@ public class Play implements Screen, ContactListener {
     private boolean ready = false;
     private Array<Body> tmpBodies = new Array<Body>();
     public boolean foldon_l = false, foldon_r = false;
+    public Body test_destroy;
 
     @Override
     public void render(float delta) {
         Gdx.gl.glClearColor(0, 0, 0, 1);
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
-
+        if (!world.isLocked()&& test_destroy!=null){
+            removeBodySafely();
+        }
         world.step(TIMESTEP, VELOCITYITERATIONS, POSITIONITERATIONS);
 
         if (ready) {
@@ -255,8 +259,7 @@ public class Play implements Screen, ContactListener {
         if (dataA.forcollison.equals("l") && dataB.forcollison.equals("g") || dataA.forcollison.equals("g") && dataB.forcollison.equals("l")) {
             foldon_l = false;
         }
-        if (dataA.forcollison.equals("r") && dataB.forcollison.equals("g") || dataA.forcollison.equals("r") && dataB.forcollison.equals("g"))
-        {
+        if (dataA.forcollison.equals("r") && dataB.forcollison.equals("g") || dataA.forcollison.equals("r") && dataB.forcollison.equals("g")) {
             foldon_r = false;
         }
     }
@@ -271,16 +274,28 @@ public class Play implements Screen, ContactListener {
     public void postSolve(Contact contact, ContactImpulse impulse) {
         YourCustomUserData dataA = (YourCustomUserData) contact.getFixtureA().getUserData();
         YourCustomUserData dataB = (YourCustomUserData) contact.getFixtureB().getUserData();
-        if (dataA != null && dataB != null && dataA.forcollison.contains("l") && dataA.forcollison.contains("g")) {
+        if (dataA.forcollison.contains("l") && dataB.forcollison.contains("g") || dataA.forcollison.equals("g") && dataB.forcollison.equals("l")) {
             if ((Math.sqrt(Math.pow((rocket.vissza_left().x), 2)) + Math.sqrt(Math.pow((rocket.vissza_left().y), 2))) > 10) {
-                contact.getFixtureA().getBody();
+                test_destroy=contact.getFixtureA().getBody();
             }
         }
-        if (dataA != null && dataB != null && dataA.forcollison.contains("l") && dataA.forcollison.contains("g")) {
+        if (dataA.forcollison.contains("r") && dataB.forcollison.contains("g") || dataA.forcollison.equals("g") && dataB.forcollison.equals("r")) {
             if ((Math.sqrt(Math.pow((rocket.vissza_left().x), 2)) + Math.sqrt(Math.pow((rocket.vissza_left().y), 2))) > 10) {
-                contact.getFixtureA().getBody();
+                test_destroy=contact.getFixtureA().getBody();
             }
         }
+    }
+
+    public void removeBodySafely() {
+        final Array<JointEdge> list = test_destroy.getJointList();
+        while (list.size > 0) {
+            System.out.println("destroyjoint");
+            world.destroyJoint(list.get(0).joint);
+            System.out.println("destroyed jointed");
+            test_destroy=null;
+        }
+        // actual remove
+        //world.destroyBody(body);
     }
 
     @Override
