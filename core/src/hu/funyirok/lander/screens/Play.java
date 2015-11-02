@@ -34,6 +34,7 @@ import com.badlogic.gdx.utils.Array;
 import java.util.Stack;
 
 import hu.funyirok.lander.entities.Rocket;
+import hu.funyirok.lander.entities.YourCustomUserData;
 
 public class Play implements Screen, ContactListener {
 
@@ -137,7 +138,6 @@ public class Play implements Screen, ContactListener {
         rocket = new Rocket(world, fixtureDef, wheelFixtureDef, 0, 300, 3, 1.25f);
 
 
-
         Gdx.input.setInputProcessor(new InputMultiplexer(new InputAdapter() {
 
             @Override
@@ -210,7 +210,9 @@ public class Play implements Screen, ContactListener {
         sebbseg_ki = new Label("M/s: " + (rocket.vissza().x + rocket.vissza().y), skin, "big");
         table.add(sebbseg_ki).padLeft(25);
         stage.addActor(table);
-        ground.getFixtureList().get(0).setUserData("g");
+        YourCustomUserData dataa = new YourCustomUserData();
+        dataa.forcollison = "g";
+        ground.getFixtureList().get(0).setUserData(dataa);
         world.setContactListener(this);
         //ready=true;
     }
@@ -221,46 +223,40 @@ public class Play implements Screen, ContactListener {
 
     @Override
     public void beginContact(Contact contact) {
-
-        Body a = contact.getFixtureA().getBody();
-        Body b = contact.getFixtureB().getBody();
-
-        if (contact.getFixtureA().getUserData().equals("l") && contact.getFixtureB().getUserData().equals("g")) {
+        YourCustomUserData dataA = (YourCustomUserData) contact.getFixtureA().getUserData();
+        YourCustomUserData dataB = (YourCustomUserData) contact.getFixtureB().getUserData();
+        if (dataA.forcollison.equals("l") && dataB.forcollison.equals("g") || dataA.forcollison.equals("g") && dataB.forcollison.equals("l")) {
             foldon_l = true;
             if ((Math.sqrt(Math.pow((rocket.vissza_left().x), 2)) + Math.sqrt(Math.pow((rocket.vissza_left().y), 2))) > 10) {
-//vesztett
                 System.out.println("túlgyors");
-            }else{
+            } else {
                 System.out.println("jólesz");
             }
         }
-        if (contact.getFixtureA().getUserData().equals("r") && contact.getFixtureB().getUserData().equals("g")) {
+        if (dataA.forcollison.equals("g") && dataB.forcollison.equals("r") || dataA.forcollison.equals("r") && dataB.forcollison.equals("g")) {
             foldon_r = true;
             if ((Math.sqrt(Math.pow((rocket.vissza_right().x), 2)) + Math.sqrt(Math.pow((rocket.vissza_right().y), 2))) > 10) {
                 System.out.println("túlgyors");
-                //vesztett
-            }else {
+            } else {
                 System.out.println("jólesz");
             }
-
         }
-        if (contact.getFixtureA().getUserData().equals("c") && contact.getFixtureB().getUserData().equals("g")) {
+        if (dataA.forcollison.equals("c") && dataB.forcollison.equals("g") || dataA.forcollison.equals("g") && dataB.forcollison.equals("c")) {
             System.out.println("főborult");
         }
-
 
 
     }
 
     @Override
     public void endContact(Contact contact) {
-        Body a = contact.getFixtureA().getBody();
-        Body b = contact.getFixtureB().getBody();
-
-        if (contact.getFixtureA().getUserData().equals("l") && contact.getFixtureB().getUserData().equals("g")) {
+        YourCustomUserData dataA = (YourCustomUserData) contact.getFixtureA().getUserData();
+        YourCustomUserData dataB = (YourCustomUserData) contact.getFixtureB().getUserData();
+        if (dataA.forcollison.equals("l") && dataB.forcollison.equals("g") || dataA.forcollison.equals("g") && dataB.forcollison.equals("l")) {
             foldon_l = false;
         }
-        if (contact.getFixtureA().getUserData().equals("r") && contact.getFixtureB().getUserData().equals("g")) {
+        if (dataA.forcollison.equals("r") && dataB.forcollison.equals("g") || dataA.forcollison.equals("r") && dataB.forcollison.equals("g"))
+        {
             foldon_r = false;
         }
     }
@@ -273,9 +269,19 @@ public class Play implements Screen, ContactListener {
 
     @Override
     public void postSolve(Contact contact, ContactImpulse impulse) {
-        //rocket wheeljoint break ha bal akkor bal ha jobb akkor jobb
+        YourCustomUserData dataA = (YourCustomUserData) contact.getFixtureA().getUserData();
+        YourCustomUserData dataB = (YourCustomUserData) contact.getFixtureB().getUserData();
+        if (dataA != null && dataB != null && dataA.forcollison.contains("l") && dataA.forcollison.contains("g")) {
+            if ((Math.sqrt(Math.pow((rocket.vissza_left().x), 2)) + Math.sqrt(Math.pow((rocket.vissza_left().y), 2))) > 10) {
+                contact.getFixtureA().getBody();
+            }
+        }
+        if (dataA != null && dataB != null && dataA.forcollison.contains("l") && dataA.forcollison.contains("g")) {
+            if ((Math.sqrt(Math.pow((rocket.vissza_left().x), 2)) + Math.sqrt(Math.pow((rocket.vissza_left().y), 2))) > 10) {
+                contact.getFixtureA().getBody();
+            }
+        }
     }
-
 
     @Override
     public void hide() {

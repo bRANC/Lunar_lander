@@ -18,7 +18,7 @@ import com.badlogic.gdx.physics.box2d.joints.WheelJointDef;
 public class Rocket extends InputAdapter {
 
     public Body chassis, leftStick, rightStick;
-    private WheelJoint leftAxis, rightAxis;
+    public WheelJoint leftAxis, rightAxis;
     private float motorSpeed = 30;
     private SpriteBatch batch;
     private Sprite boxSprite;
@@ -41,7 +41,7 @@ public class Rocket extends InputAdapter {
         //chassisShape.set(new float[] {-width / 2, -height / 2, width / 2, -height / 2, width / 2 * .4f, height / 2, -width / 2 * .8f, height / 2 * .8f}); // counterclockwise order
         chassisShape.setAsBox(.60f, 1);
         chassisFixtureDef.shape = chassisShape;
-
+        chassisFixtureDef.density = 5;
 
         //chassis texture betoltese
         boxSprite = new Sprite(new Texture("img/ship/body.png"));
@@ -60,7 +60,7 @@ public class Rocket extends InputAdapter {
 
 
         wheelFixtureDef.shape = lander_stick;
-
+        wheelFixtureDef.density = 0;
 
 //Wheel texture betoltese
         wheelSprite = new Sprite(new Texture("img/ship/left_stick.png"));
@@ -99,10 +99,16 @@ public class Rocket extends InputAdapter {
         axisDef.localAnchorA.x *= -1;
 
         rightAxis = (WheelJoint) world.createJoint(axisDef);
+        YourCustomUserData dataa = new YourCustomUserData();
+        YourCustomUserData datab = new YourCustomUserData();
+        YourCustomUserData datac = new YourCustomUserData();
+        dataa.forcollison = "l";
+        leftStick.getFixtureList().get(0).setUserData(dataa);
+        datab.forcollison = "r";
+        rightStick.getFixtureList().get(0).setUserData(datab);
+        datac.forcollison = "c";
+        chassis.getFixtureList().get(0).setUserData(datac);
 
-        leftStick.getFixtureList().get(0).setUserData("l");
-        rightStick.getFixtureList().get(0).setUserData("r");
-        chassis.getFixtureList().get(0).setUserData("c");
 
     }
 
@@ -110,7 +116,10 @@ public class Rocket extends InputAdapter {
     //minden eggyes render kockában meg hívva
     public void mozgas(boolean foldon_l, boolean foldon_r) {
         //angel = (angel * 180) / Math.PI;//fokba alakítás
-
+        if (0.05 > Math.sqrt(Math.pow((chassis.getAngularVelocity()), 2))) {//extra stabilitás hogy ne prögöjön mint a pörgő warrior
+            chassis.setAngularVelocity(0);
+        }
+        System.out.println(chassis.getAngularVelocity());
         irany_y = (float) Math.cos(chassis.getAngle()) * motorSpeed * 16;
         irany_x = (float) Math.sin(chassis.getAngle()) * motorSpeed * 16;
 
@@ -127,7 +136,6 @@ public class Rocket extends InputAdapter {
         if (jobb) {
             chassis.applyAngularImpulse(2.5f, true);
         }
-        //if ()
         if (!foldon_l)
             leftStick.setTransform(leftStick.getPosition().x, leftStick.getPosition().y, chassis.getAngle());
         if (!foldon_r)
