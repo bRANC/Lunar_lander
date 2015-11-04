@@ -21,7 +21,7 @@ import com.badlogic.gdx.physics.box2d.World;
 public class Debris {
     public Body debryy;
     public Sprite debryySprite;
-    public Debris(World world, FixtureDef FixtureDef, float x, float y) {
+    public Debris(World world, FixtureDef FixtureDef, float x, float y,String helyszin) {
         BodyDef bodyDef = new BodyDef();
         bodyDef.type = BodyType.KinematicBody;
         bodyDef.position.set(x, y);
@@ -33,7 +33,7 @@ public class Debris {
         debryy = world.createBody(bodyDef);
         debryy.createFixture(FixtureDef);
 
-        debryySprite = new Sprite(new Texture("img/ship/right_stick.png"));
+        debryySprite = new Sprite(new Texture("img/"+helyszin+"/lik.png"));
         debryySprite.setSize(.70f*2, .40f * 2);
         debryySprite.setOrigin(debryySprite.getWidth() / 2, debryySprite.getHeight() / 2);
         debryy.setUserData(debryySprite);

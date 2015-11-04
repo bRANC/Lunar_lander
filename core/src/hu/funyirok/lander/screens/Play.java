@@ -34,6 +34,9 @@ import com.badlogic.gdx.utils.Array;
 
 import net.dermetfan.gdx.graphics.g2d.AnimatedSprite;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 import java.util.Random;
 import java.util.Stack;
 
@@ -57,7 +60,7 @@ public class Play implements Screen, ContactListener {
     private final int VELOCITYITERATIONS = 8, POSITIONITERATIONS = 3;
     private Sprite boxSprite;
     private Rocket rocket;
-    private Debris[] szemet = new Debris[30];
+    public ArrayList<Debris> debrisList;
     private Label sebbseg_ki, x_ki, y_ki;
     private boolean ready = false;
     private Array<Body> tmpBodies = new Array<Body>();
@@ -155,15 +158,15 @@ public class Play implements Screen, ContactListener {
         rocket = new Rocket(world, fixtureDef, wheelFixtureDef, 0, 30);
         Random r = new Random();
         float a;
-        System.out.println("szemetek: " + szemet.length);
-        for (int i = 0; i < szemet.length - 1; i++) {
+        debrisList= new ArrayList<Debris>();
+        for (int i = 0; i < r.nextInt(20)*4; i++) {
             a = r.nextInt(100);
             if (r.nextBoolean()) {
                 a *= (-1);
             }
-            szemet[i] = new Debris(world, fixtureDef, a, 0);
+            debrisList.add(new Debris(world, fixtureDef, a, 0,"moon"));
         }
-
+        System.out.println(debrisList.size());
         Gdx.input.setInputProcessor(new InputMultiplexer(new InputAdapter() {
 
             @Override
