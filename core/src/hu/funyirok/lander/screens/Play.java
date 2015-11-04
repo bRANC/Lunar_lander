@@ -88,6 +88,7 @@ public class Play implements Screen, ContactListener {
                 sprite.setRotation(body.getAngle() * MathUtils.radiansToDegrees);
                 sprite.draw(batch);
             }
+            //animated instanceof sprite dolog
         }
         batch.end();
         ready = true;

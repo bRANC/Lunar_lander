@@ -3,8 +3,10 @@ package hu.funyirok.lander.entities;
 import com.badlogic.gdx.Input.Keys;
 import com.badlogic.gdx.InputAdapter;
 import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.Body;
 import com.badlogic.gdx.physics.box2d.BodyDef;
@@ -15,6 +17,8 @@ import com.badlogic.gdx.physics.box2d.World;
 import com.badlogic.gdx.physics.box2d.joints.WheelJoint;
 import com.badlogic.gdx.physics.box2d.joints.WheelJointDef;
 
+import net.dermetfan.gdx.graphics.g2d.AnimatedSprite;
+
 public class Rocket extends InputAdapter {
 
     public Body chassis, leftStick, rightStick;
@@ -23,6 +27,7 @@ public class Rocket extends InputAdapter {
     private SpriteBatch batch;
     private Sprite boxSprite;
     private Sprite wheelSprite;
+    public AnimatedSprite animsprite;
     private boolean fel = false, le = false, bal = false, jobb = false;
     public double angel;
     public float irany_x, irany_y;
@@ -43,16 +48,18 @@ public class Rocket extends InputAdapter {
         chassisFixtureDef.shape = chassisShape;
         chassisFixtureDef.density = 5;
 
-        //chassis texture betoltese
-        boxSprite = new Sprite(new Texture("img/ship/body.png"));
-        boxSprite.setSize(3, 5);
-        boxSprite.setOrigin(boxSprite.getWidth() / 2, boxSprite.getHeight() / 2);
-
 
         chassis = world.createBody(bodyDef);
         chassis.createFixture(chassisFixtureDef);
 
-        chassis.setUserData(boxSprite);
+        //chassis animated texture betoltese
+        Animation anim = new Animation(1 / 3f, new TextureRegion(new Texture("img/ship/body.png")), new TextureRegion(new Texture("img/ship/body.png")), new TextureRegion(new Texture("img/ship/body.png")));
+        anim.setPlayMode(Animation.PlayMode.LOOP);
+        animsprite = new AnimatedSprite(anim);
+        animsprite.setSize(3, 5);
+        animsprite.setOrigin(animsprite.getWidth() / 2, animsprite.getHeight() / 2);
+
+        chassis.setUserData(anim);
 
         // left wheel
         PolygonShape lander_stick = new PolygonShape();
@@ -119,7 +126,7 @@ public class Rocket extends InputAdapter {
         if (0.08 > Math.sqrt(Math.pow((chassis.getAngularVelocity()), 2))) {//extra stabilitás hogy ne prögöjön mint a pörgő warrior
             chassis.setAngularVelocity(0);
         }
-       // System.out.println(chassis.getAngularVelocity());
+        // System.out.println(chassis.getAngularVelocity());
         irany_y = (float) Math.cos(chassis.getAngle()) * motorSpeed * 16;
         irany_x = (float) Math.sin(chassis.getAngle()) * motorSpeed * 16;
 
