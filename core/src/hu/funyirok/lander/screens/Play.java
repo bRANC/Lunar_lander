@@ -138,12 +138,12 @@ public class Play implements Screen, ContactListener {
         table.setFillParent(true);
         table.left().top();
         //world = new World(new Vector2(-3.25f, -6.81f), true); //meg dönti a gravitációt
-        world = new World(new Vector2(0, -9f), true);
+        world = new World(new Vector2(0, -9.81f), true);
         debugRenderer = new Box2DDebugRenderer();
         batch = new SpriteBatch();
 
         camera = new OrthographicCamera();
-
+        camera.zoom=2;
         BodyDef bodyDef = new BodyDef();
         FixtureDef fixtureDef = new FixtureDef(), wheelFixtureDef = new FixtureDef();
 
@@ -155,7 +155,7 @@ public class Play implements Screen, ContactListener {
         wheelFixtureDef.density = 0;
         wheelFixtureDef.restitution = .4f;
 
-        rocket = new Rocket(world, fixtureDef, wheelFixtureDef, 0, 30);
+        rocket = new Rocket(world, fixtureDef, wheelFixtureDef, 0, 1000);
         Random r = new Random();
         float a;
         debrisList= new ArrayList<Debris>();
@@ -164,7 +164,7 @@ public class Play implements Screen, ContactListener {
             if (r.nextBoolean()) {
                 a *= (-1);
             }
-            debrisList.add(new Debris(world, fixtureDef, a, 0,"moon"));
+            debrisList.add(new Debris(world, fixtureDef, a, .4f,"moon"));
         }
         System.out.println(debrisList.size());
         Gdx.input.setInputProcessor(new InputMultiplexer(new InputAdapter() {
@@ -207,7 +207,7 @@ public class Play implements Screen, ContactListener {
 
 
         //föld textura fel "húzása"
-        boxSprite = new Sprite(new Texture("img/splash.png"));
+        boxSprite = new Sprite(new Texture("img/moon/lik.png"));
         boxSprite.setSize(200f, 9.8f);
         boxSprite.setOrigin(boxSprite.getWidth() / 2, boxSprite.getHeight() / 2);
 

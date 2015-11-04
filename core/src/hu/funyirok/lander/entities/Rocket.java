@@ -44,10 +44,8 @@ public class Rocket extends InputAdapter {
         batch = new SpriteBatch();
         // chassis
         PolygonShape chassisShape = new PolygonShape();
-        //chassisShape.set(new float[] {-width / 2, -height / 2, width / 2, -height / 2, width / 2 * .4f, height / 2, -width / 2 * .8f, height / 2 * .8f}); // counterclockwise order
         chassisShape.setAsBox(.60f, 1);
         chassisFixtureDef.shape = chassisShape;
-        chassisFixtureDef.density = 5;
 
 
         chassis = world.createBody(bodyDef);
@@ -59,9 +57,9 @@ public class Rocket extends InputAdapter {
         animsprite = new AnimatedSprite(anim);
         animsprite.setSize(3, 5);
         animsprite.setOrigin(animsprite.getWidth() / 2, animsprite.getHeight() / 2);
-
+        chassis.setTransform(x,y,(float)(Math.PI/180)*180);
         chassis.setUserData(animsprite);
-
+        chassis.setActive(false);
         // left wheel
         PolygonShape lander_stick = new PolygonShape();
         lander_stick.setAsBox(.2f, .2f);
@@ -96,7 +94,7 @@ public class Rocket extends InputAdapter {
         axisDef.bodyA = chassis;
         axisDef.bodyB = leftStick;
         axisDef.localAnchorA.set(-width / 2 * .40f + lander_stick.getRadius(), -height / 2 * 3f);
-        axisDef.frequencyHz = chassisFixtureDef.density;
+        axisDef.frequencyHz = 3;
         axisDef.localAxisA.set(Vector2.Y);
         //axisDef.maxMotorTorque = chassisFixtureDef.density * 10;
         axisDef.localAnchorA.x *= 2;
@@ -107,6 +105,7 @@ public class Rocket extends InputAdapter {
         axisDef.localAnchorA.x *= -1;
 
         rightAxis = (WheelJoint) world.createJoint(axisDef);
+
         YourCustomUserData dataa = new YourCustomUserData();
         YourCustomUserData datab = new YourCustomUserData();
         YourCustomUserData datac = new YourCustomUserData();
@@ -118,12 +117,15 @@ public class Rocket extends InputAdapter {
         chassis.getFixtureList().get(0).setUserData(datac);
 
 
+        chassis.setLinearVelocity(0,-100);
+        chassis.setActive(true);
     }
 
 
     //minden eggyes render kockában meg hívva
     public void mozgas(boolean foldon_l, boolean foldon_r) {
         //angel = (angel * 180) / Math.PI;//fokba alakítás
+        System.out.println(chassis.getAngle() + "  " + chassis.getAngularDamping() +"  "+chassis.getAngularVelocity());
         if (0.08 > Math.sqrt(Math.pow((chassis.getAngularVelocity()), 2))) {//extra stabilitás hogy ne prögöjön mint a pörgő warrior
             chassis.setAngularVelocity(0);
         }
@@ -132,10 +134,10 @@ public class Rocket extends InputAdapter {
         irany_x = (float) Math.sin(chassis.getAngle()) * motorSpeed * 16;
 
         if (fel) {
-            chassis.applyForce(-irany_x, irany_y, chassis.getWorldCenter().x, chassis.getWorldCenter().y, true);
+            chassis.applyForceToCenter(-irany_x, irany_y, true);
         }
         if (le) {
-            chassis.applyForce(irany_x, -irany_y, chassis.getWorldCenter().x, chassis.getWorldCenter().y, true);
+            chassis.applyForceToCenter(irany_x, -irany_y, true);
         }
         if (bal) {
             chassis.applyAngularImpulse(-2.5f, true);
