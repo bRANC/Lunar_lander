@@ -32,11 +32,12 @@ public class Rocket extends InputAdapter {
     public double angel;
     public float irany_x, irany_y;
     private Vector2 direction;
+    public float width, height;
 
     //http://gamedev.stackexchange.com/questions/84429/box2d-and-libgdx-attach-particleeffect-to-body
-    public Rocket(World world, FixtureDef chassisFixtureDef, FixtureDef wheelFixtureDef, float x, float y, float width, float height) {
-
-
+    public Rocket(World world, FixtureDef chassisFixtureDef, FixtureDef wheelFixtureDef, float x, float y) {
+        width = 3;
+        height = 1.25f;
         BodyDef bodyDef = new BodyDef();
         bodyDef.type = BodyType.DynamicBody;
         bodyDef.position.set(x, y);
@@ -53,13 +54,13 @@ public class Rocket extends InputAdapter {
         chassis.createFixture(chassisFixtureDef);
 
         //chassis animated texture betoltese
-        Animation anim = new Animation(1 / 3f, new TextureRegion(new Texture("img/ship/body.png")), new TextureRegion(new Texture("img/ship/body.png")), new TextureRegion(new Texture("img/ship/body.png")));
+        Animation anim = new Animation(1 / 3f, new TextureRegion(new Texture("img/ship/body.png")), new TextureRegion(new Texture("img/ship/body1.png")), new TextureRegion(new Texture("img/ship/body2.png")));
         anim.setPlayMode(Animation.PlayMode.LOOP);
         animsprite = new AnimatedSprite(anim);
         animsprite.setSize(3, 5);
         animsprite.setOrigin(animsprite.getWidth() / 2, animsprite.getHeight() / 2);
 
-        chassis.setUserData(anim);
+        chassis.setUserData(animsprite);
 
         // left wheel
         PolygonShape lander_stick = new PolygonShape();

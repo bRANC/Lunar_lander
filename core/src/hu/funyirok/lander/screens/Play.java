@@ -32,8 +32,12 @@ import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.utils.Array;
 
+import net.dermetfan.gdx.graphics.g2d.AnimatedSprite;
+
+import java.util.Random;
 import java.util.Stack;
 
+import hu.funyirok.lander.entities.Debris;
 import hu.funyirok.lander.entities.Rocket;
 import hu.funyirok.lander.entities.YourCustomUserData;
 
@@ -52,7 +56,8 @@ public class Play implements Screen, ContactListener {
     private final float TIMESTEP = 1 / 60f;
     private final int VELOCITYITERATIONS = 8, POSITIONITERATIONS = 3;
     private Sprite boxSprite;
-    private Rocket rocket, rocket1;
+    private Rocket rocket;
+    private Debris[] szemet = new Debris[30];
     private Label sebbseg_ki, x_ki, y_ki;
     private boolean ready = false;
     private Array<Body> tmpBodies = new Array<Body>();
@@ -63,7 +68,7 @@ public class Play implements Screen, ContactListener {
     public void render(float delta) {
         Gdx.gl.glClearColor(0, 0, 0, 1);
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
-        if (!world.isLocked()&& test_joints_destroy !=null){
+        if (!world.isLocked() && test_joints_destroy != null) {
             removeJointSafely();
         }
         world.step(TIMESTEP, VELOCITYITERATIONS, POSITIONITERATIONS);
@@ -83,6 +88,14 @@ public class Play implements Screen, ContactListener {
             if (body.getUserData() instanceof Sprite) {
 
                 Sprite sprite = (Sprite) body.getUserData();
+
+                sprite.setPosition(body.getPosition().x - sprite.getWidth() / 2, body.getPosition().y - sprite.getHeight() / 2);
+                sprite.setRotation(body.getAngle() * MathUtils.radiansToDegrees);
+                sprite.draw(batch);
+            }
+            if (body.getUserData() instanceof AnimatedSprite) {
+
+                AnimatedSprite sprite = (AnimatedSprite) body.getUserData();
 
                 sprite.setPosition(body.getPosition().x - sprite.getWidth() / 2, body.getPosition().y - sprite.getHeight() / 2);
                 sprite.setRotation(body.getAngle() * MathUtils.radiansToDegrees);
@@ -136,12 +149,20 @@ public class Play implements Screen, ContactListener {
         fixtureDef.friction = .4f;
         fixtureDef.restitution = .3f;
 
-        wheelFixtureDef.density = fixtureDef.density * 1.5f;
-        wheelFixtureDef.friction = 50;
+        wheelFixtureDef.density = 0;
         wheelFixtureDef.restitution = .4f;
 
-        rocket = new Rocket(world, fixtureDef, wheelFixtureDef, 0, 30, 3, 1.25f);
-
+        rocket = new Rocket(world, fixtureDef, wheelFixtureDef, 0, 30);
+        Random r = new Random();
+        float a;
+        System.out.println("szemetek: " + szemet.length);
+        for (int i = 0; i < szemet.length - 1; i++) {
+            a = r.nextInt(100);
+            if (r.nextBoolean()) {
+                a *= (-1);
+            }
+            szemet[i] = new Debris(world, fixtureDef, a, 0);
+        }
 
         Gdx.input.setInputProcessor(new InputMultiplexer(new InputAdapter() {
 
@@ -276,12 +297,12 @@ public class Play implements Screen, ContactListener {
         YourCustomUserData dataB = (YourCustomUserData) contact.getFixtureB().getUserData();
         if (dataA.forcollison.contains("l") && dataB.forcollison.contains("g") || dataA.forcollison.equals("g") && dataB.forcollison.equals("l")) {
             if ((Math.sqrt(Math.pow((rocket.vissza_left().x), 2)) + Math.sqrt(Math.pow((rocket.vissza_left().y), 2))) > 10) {
-                test_joints_destroy =rocket.leftStick;
+                test_joints_destroy = rocket.leftStick;
             }
         }
         if (dataA.forcollison.contains("r") && dataB.forcollison.contains("g") || dataA.forcollison.equals("g") && dataB.forcollison.equals("r")) {
             if ((Math.sqrt(Math.pow((rocket.vissza_left().x), 2)) + Math.sqrt(Math.pow((rocket.vissza_left().y), 2))) > 10) {
-                test_joints_destroy =rocket.rightStick;
+                test_joints_destroy = rocket.rightStick;
             }
         }
     }
@@ -290,7 +311,7 @@ public class Play implements Screen, ContactListener {
         final Array<JointEdge> list = test_joints_destroy.getJointList();
         while (list.size > 0) {
             world.destroyJoint(list.get(0).joint);
-            test_joints_destroy =null;
+            test_joints_destroy = null;
         }
     }
 
