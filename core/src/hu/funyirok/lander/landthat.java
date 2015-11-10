@@ -3,8 +3,6 @@ package hu.funyirok.lander;
 import com.badlogic.gdx.Game;
 
 import hu.funyirok.lander.screens.LevelMenu;
-import hu.funyirok.lander.screens.Play;
-import hu.funyirok.lander.screens.Splash;
 
 public class landthat extends Game {
 

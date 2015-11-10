@@ -1,5 +1,7 @@
 package hu.funyirok.lander.entities;
 
+import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.Input;
 import com.badlogic.gdx.Input.Keys;
 import com.badlogic.gdx.InputAdapter;
 import com.badlogic.gdx.graphics.Texture;
@@ -25,13 +27,10 @@ public class Rocket extends InputAdapter {
     public WheelJoint leftAxis, rightAxis;
     private float motorSpeed = 30;
     private SpriteBatch batch;
-    private Sprite boxSprite;
     private Sprite wheelSprite;
     public AnimatedSprite animsprite;
     private boolean fel = false, le = false, bal = false, jobb = false;
-    public double angel;
     public float irany_x, irany_y;
-    private Vector2 direction;
     public float width, height;
 
     //http://gamedev.stackexchange.com/questions/84429/box2d-and-libgdx-attach-particleeffect-to-body
@@ -47,7 +46,6 @@ public class Rocket extends InputAdapter {
         chassisShape.setAsBox(.60f, 1);
         chassisFixtureDef.shape = chassisShape;
 
-
         chassis = world.createBody(bodyDef);
         chassis.createFixture(chassisFixtureDef);
 
@@ -57,7 +55,7 @@ public class Rocket extends InputAdapter {
         animsprite = new AnimatedSprite(anim);
         animsprite.setSize(3, 5);
         animsprite.setOrigin(animsprite.getWidth() / 2, animsprite.getHeight() / 2);
-        chassis.setTransform(x,y,(float)(Math.PI/180)*180);
+        chassis.setTransform(x, y, (float) (Math.PI / 180) * 180);
         chassis.setUserData(animsprite);
         chassis.setActive(false);
         // left wheel
@@ -117,7 +115,7 @@ public class Rocket extends InputAdapter {
         chassis.getFixtureList().get(0).setUserData(datac);
 
 
-        chassis.setLinearVelocity(0,-100);
+        chassis.setLinearVelocity(0, -100);
         chassis.setActive(true);
     }
 
@@ -125,7 +123,8 @@ public class Rocket extends InputAdapter {
     //minden eggyes render kockában meg hívva
     public void mozgas(boolean foldon_l, boolean foldon_r) {
         //angel = (angel * 180) / Math.PI;//fokba alakítás
-        System.out.println(chassis.getAngle() + "  " + chassis.getAngularDamping() +"  "+chassis.getAngularVelocity());
+        System.out.println(chassis.getAngle() + "  " + chassis.getAngularDamping() + "  " + chassis.getAngularVelocity());
+
         if (0.08 > Math.sqrt(Math.pow((chassis.getAngularVelocity()), 2))) {//extra stabilitás hogy ne prögöjön mint a pörgő warrior
             chassis.setAngularVelocity(0);
         }
@@ -151,7 +150,40 @@ public class Rocket extends InputAdapter {
         if (!foldon_r)
             rightStick.setTransform(rightStick.getPosition().x, rightStick.getPosition().y, chassis.getAngle());
 
+        if (Gdx.input.isPeripheralAvailable(Input.Peripheral.Accelerometer)) gyro();
+
     }
+
+    public float giro_tureshatar = (float) 1.5;
+    public float x, y, z;
+
+    private void gyro() {
+        gyroXYZ();
+        System.out.println(x);
+        chassis.applyAngularImpulse(x, true);
+    }
+
+    private void gyroXYZ() {
+        gyroX();
+        gyroY();
+        gyroZ();
+    }
+
+    private void gyroX() {
+        x = Gdx.input.getAccelerometerX();
+        if (x > giro_tureshatar) x = giro_tureshatar;
+    }
+
+    private void gyroY() {
+        y = Gdx.input.getAccelerometerY();
+        if (y > giro_tureshatar) y = giro_tureshatar;
+    }
+
+    private void gyroZ() {
+        z = Gdx.input.getAccelerometerZ();
+        if (z > giro_tureshatar) z = giro_tureshatar;
+    }
+
 
     @Override
     public boolean keyDown(int keycode) {
