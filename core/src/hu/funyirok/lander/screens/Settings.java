@@ -27,7 +27,7 @@ public class Settings implements Screen {
 	private Stage stage;
 	private Table table;
 	private Skin skin;
-
+	public landthat osobj;
 	/** @return the directory the levels will be saved to and read from */
 	public static FileHandle levelDirectory() {
 		String prefsDir = Gdx.app.getPreferences(landthat.TITLE).getString("leveldirectory").trim();
@@ -104,7 +104,7 @@ public class Settings implements Screen {
 
 						@Override
 						public void run() {
-							((Game) Gdx.app.getApplicationListener()).setScreen(new MainMenu());
+							((Game) Gdx.app.getApplicationListener()).setScreen(osobj.mainmenu);
 						}
 					})));
 				}
@@ -131,7 +131,7 @@ public class Settings implements Screen {
 
 	@Override
 	public void hide() {
-		dispose();
+
 	}
 
 	@Override

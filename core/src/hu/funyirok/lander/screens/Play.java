@@ -26,23 +26,29 @@ import com.badlogic.gdx.physics.box2d.JointEdge;
 import com.badlogic.gdx.physics.box2d.Manifold;
 import com.badlogic.gdx.physics.box2d.PolygonShape;
 import com.badlogic.gdx.physics.box2d.World;
+import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
+import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
+import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.utils.Array;
 
 import net.dermetfan.gdx.graphics.g2d.AnimatedSprite;
 
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
 import java.util.Random;
 import java.util.Stack;
 
 import hu.funyirok.lander.entities.Debris;
 import hu.funyirok.lander.entities.Rocket;
 import hu.funyirok.lander.entities.YourCustomUserData;
+import hu.funyirok.lander.landthat;
+
+import static com.badlogic.gdx.scenes.scene2d.actions.Actions.moveTo;
+import static com.badlogic.gdx.scenes.scene2d.actions.Actions.run;
+import static com.badlogic.gdx.scenes.scene2d.actions.Actions.sequence;
 
 public class Play implements Screen, ContactListener {
 
@@ -66,6 +72,7 @@ public class Play implements Screen, ContactListener {
     private Array<Body> tmpBodies = new Array<Body>();
     public boolean foldon_l = false, foldon_r = false;
     public Body test_joints_destroy;
+    public landthat osobj;
 
     @Override
     public void render(float delta) {
@@ -135,6 +142,7 @@ public class Play implements Screen, ContactListener {
         skin = new Skin(Gdx.files.internal("ui/menuSkin.json"), new TextureAtlas("ui/atlas.pack"));
 
         table = new Table(skin);
+
         table.setFillParent(true);
         table.left().top();
         //world = new World(new Vector2(-3.25f, -6.81f), true); //meg dönti a gravitációt
@@ -143,7 +151,7 @@ public class Play implements Screen, ContactListener {
         batch = new SpriteBatch();
 
         camera = new OrthographicCamera();
-        camera.zoom=2;
+        camera.zoom = 2;
         BodyDef bodyDef = new BodyDef();
         FixtureDef fixtureDef = new FixtureDef(), wheelFixtureDef = new FixtureDef();
 
@@ -155,17 +163,46 @@ public class Play implements Screen, ContactListener {
         wheelFixtureDef.density = 0;
         wheelFixtureDef.restitution = .4f;
 
-        rocket = new Rocket(world, fixtureDef, wheelFixtureDef, 0, 1000);
+        rocket = new Rocket(osobj, world, fixtureDef, wheelFixtureDef, 0, 1000);
         Random r = new Random();
         float a;
-        debrisList= new ArrayList<Debris>();
-        for (int i = 0; i < r.nextInt(20)*4; i++) {
+        debrisList = new ArrayList<Debris>();
+        for (int i = 0; i < r.nextInt(20) * 4; i++) {
             a = r.nextInt(100);
             if (r.nextBoolean()) {
                 a *= (-1);
             }
-            debrisList.add(new Debris(world, fixtureDef, a, .4f,"moon"));
+            debrisList.add(new Debris(world, fixtureDef, a, .4f, "moon"));
         }
+
+        final TextButton buttonLeft = new TextButton(" left ", skin);
+        buttonLeft.addListener(new ClickListener() {
+
+            @Override
+            public void clicked(InputEvent event, float x, float y) {
+                stage.addAction(sequence(moveTo(0, -stage.getHeight(), .5f), run(new Runnable() {
+
+                    @Override
+                    public void run() {
+                        System.out.println("valami");
+                    }
+                })));
+            }
+        });
+        /*final ClickListener buttonHandler = new ClickListener() {
+
+            @Override
+            public void clicked(InputEvent event, float x, float y) {
+                if (event.getListenerActor() == buttonLeft) {
+                    System.out.println("left");
+                }
+
+            }
+        };
+        buttonLeft.addListener(buttonHandler);*/
+        buttonLeft.pad(15);
+        table.add(buttonLeft);
+
         System.out.println(debrisList.size());
         Gdx.input.setInputProcessor(new InputMultiplexer(new InputAdapter() {
 
@@ -173,7 +210,7 @@ public class Play implements Screen, ContactListener {
             public boolean keyDown(int keycode) {
                 switch (keycode) {
                     case Keys.ESCAPE:
-                        ((Game) Gdx.app.getApplicationListener()).setScreen(new LevelMenu());
+                        ((Game) Gdx.app.getApplicationListener()).setScreen(osobj.levelmenu);
                         break;
                 }
                 return false;
@@ -320,7 +357,7 @@ public class Play implements Screen, ContactListener {
 
     @Override
     public void hide() {
-        dispose();
+
     }
 
     @Override

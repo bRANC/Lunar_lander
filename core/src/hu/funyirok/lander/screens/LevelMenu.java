@@ -1,9 +1,5 @@
 package hu.funyirok.lander.screens;
 
-import static com.badlogic.gdx.scenes.scene2d.actions.Actions.moveTo;
-import static com.badlogic.gdx.scenes.scene2d.actions.Actions.run;
-import static com.badlogic.gdx.scenes.scene2d.actions.Actions.sequence;
-
 import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
@@ -19,18 +15,20 @@ import com.badlogic.gdx.scenes.scene2d.ui.ScrollPane;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
-import com.badlogic.gdx.scenes.scene2d.ui.TextArea;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 
-import net.dermetfan.gdx.scenes.scene2d.Scene2DUtils;
+import hu.funyirok.lander.landthat;
 
-import javafx.scene.Scene;
+import static com.badlogic.gdx.scenes.scene2d.actions.Actions.moveTo;
+import static com.badlogic.gdx.scenes.scene2d.actions.Actions.run;
+import static com.badlogic.gdx.scenes.scene2d.actions.Actions.sequence;
 
 public class LevelMenu implements Screen {
 
     private Stage stage;
     private Table table;
     private Skin skin;
+    public landthat osobj;
 
     @Override
     public void render(float delta) {
@@ -65,7 +63,7 @@ public class LevelMenu implements Screen {
 
         //List list = new List(/*new String[] {"one", "two", "thrasdfasfsadfadsfasdfasdfadfasdfasdfasdfasdfasdfee", "and", "so", "on", "two", "threadfasdfae", "and", "so", "on", "tafdasdfasdfwo", "three", "and", "so", "on", "two", "three", "and", "so", "on", "two", "three", "and", "so", "on"}, skin*/);
         List list = new List(skin);
-        list.setItems(new String[]{"moon", "mars","sun","yoMamma"});
+        list.setItems(new String[]{"moon", "mars", "sun", "yoMamma"});
         ScrollPane scrollPane = new ScrollPane(list, skin);
 
 
@@ -82,7 +80,7 @@ public class LevelMenu implements Screen {
 
             @Override
             public void clicked(InputEvent event, float x, float y) {
-                ((Game) Gdx.app.getApplicationListener()).setScreen(new Play());
+                ((Game) Gdx.app.getApplicationListener()).setScreen(osobj.play);
             }
 
         });
@@ -97,7 +95,7 @@ public class LevelMenu implements Screen {
 
                     @Override
                     public void run() {
-                        ((Game) Gdx.app.getApplicationListener()).setScreen(new MainMenu());
+                        ((Game) Gdx.app.getApplicationListener()).setScreen(osobj.mainmenu);
                     }
 
                 })));
@@ -152,7 +150,7 @@ public class LevelMenu implements Screen {
 
     @Override
     public void hide() {
-        dispose();
+
     }
 
     @Override

@@ -21,6 +21,8 @@ import com.badlogic.gdx.physics.box2d.joints.WheelJointDef;
 
 import net.dermetfan.gdx.graphics.g2d.AnimatedSprite;
 
+import hu.funyirok.lander.landthat;
+
 public class Rocket extends InputAdapter {
 
     public Body chassis, leftStick, rightStick;
@@ -29,12 +31,16 @@ public class Rocket extends InputAdapter {
     private SpriteBatch batch;
     private Sprite wheelSprite;
     public AnimatedSprite animsprite;
-    private boolean fel = false, le = false, bal = false, jobb = false;
+    public boolean fel = false, le = false, bal = false, jobb = false;
     public float irany_x, irany_y;
     public float width, height;
+    public landthat osobj;
 
     //http://gamedev.stackexchange.com/questions/84429/box2d-and-libgdx-attach-particleeffect-to-body
-    public Rocket(World world, FixtureDef chassisFixtureDef, FixtureDef wheelFixtureDef, float x, float y) {
+    public Rocket(landthat osobjbe,World world, FixtureDef chassisFixtureDef, FixtureDef wheelFixtureDef, float x, float y) {
+
+
+        osobj=osobjbe;
         width = 3;
         height = 1.25f;
         BodyDef bodyDef = new BodyDef();
@@ -123,7 +129,7 @@ public class Rocket extends InputAdapter {
     //minden eggyes render kockában meg hívva
     public void mozgas(boolean foldon_l, boolean foldon_r) {
         //angel = (angel * 180) / Math.PI;//fokba alakítás
-        System.out.println(chassis.getAngle() + "  " + chassis.getAngularDamping() + "  " + chassis.getAngularVelocity());
+        //System.out.println(chassis.getAngle() + "  " + chassis.getAngularDamping() + "  " + chassis.getAngularVelocity());
 
         if (0.08 > Math.sqrt(Math.pow((chassis.getAngularVelocity()), 2))) {//extra stabilitás hogy ne prögöjön mint a pörgő warrior
             chassis.setAngularVelocity(0);
@@ -149,8 +155,7 @@ public class Rocket extends InputAdapter {
             leftStick.setTransform(leftStick.getPosition().x, leftStick.getPosition().y, chassis.getAngle());
         if (!foldon_r)
             rightStick.setTransform(rightStick.getPosition().x, rightStick.getPosition().y, chassis.getAngle());
-
-        if (Gdx.input.isPeripheralAvailable(Input.Peripheral.Accelerometer)) gyro();
+        if (osobj.levelmenu.giro) gyro();
 
     }
 

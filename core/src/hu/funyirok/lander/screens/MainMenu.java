@@ -32,6 +32,7 @@ public class MainMenu implements Screen {
     private Skin skin;
     private Table table;
     private TweenManager tweenManager;
+    public landthat osobj;
 
     @Override
     public void render(float delta) {
@@ -77,7 +78,7 @@ public class MainMenu implements Screen {
 
                     @Override
                     public void run() {
-                        ((Game) Gdx.app.getApplicationListener()).setScreen(new LevelMenu());
+                        ((Game) Gdx.app.getApplicationListener()).setScreen(osobj.levelmenu);
                     }
                 })));
             }
@@ -93,7 +94,7 @@ public class MainMenu implements Screen {
 
                     @Override
                     public void run() {
-                        ((Game) Gdx.app.getApplicationListener()).setScreen(new Settings());
+                        ((Game) Gdx.app.getApplicationListener()).setScreen(osobj.setting);
                     }
                 })));
             }
@@ -163,7 +164,7 @@ public class MainMenu implements Screen {
 
     @Override
     public void hide() {
-        dispose();
+
     }
 
     @Override
