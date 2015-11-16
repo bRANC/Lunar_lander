@@ -11,7 +11,7 @@ public class DesktopLauncher {
 		config.title = landthat.TITLE + " v" + landthat.VERSION;
 		config.vSyncEnabled = true;
 		//config.useGL20 = true;
-		config.width = 500;
+		config.width = 720;
 		config.height = 720;
 		config.addIcon("img/icon.png", Files.FileType.Internal);
 		new LwjglApplication(new landthat(), config);

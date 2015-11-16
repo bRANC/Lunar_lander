@@ -123,7 +123,7 @@ public class Play implements Screen, ContactListener {
 
         stage.draw();
 
-        debugRenderer.render(world, camera.combined); // hogy lássuk a mesh-t
+        //debugRenderer.render(world, camera.combined); // hogy lássuk a mesh-t
     }
 
     @Override
@@ -200,7 +200,7 @@ public class Play implements Screen, ContactListener {
             }
         };
         buttonLeft.addListener(buttonHandler);*/
-        buttonLeft.pad(15);
+        buttonLeft.pad(15).row();
         table.add(buttonLeft);
 
         System.out.println(debrisList.size());
@@ -270,6 +270,7 @@ public class Play implements Screen, ContactListener {
         groundShape.dispose();
 
         //szöveg ki írás
+        table.add().row();
         x_ki = new Label("M/s: " + rocket.vissza().x, skin, "big");
         table.add(x_ki).padLeft(25).row();
         y_ki = new Label("M/s: " + rocket.vissza().y, skin, "big");
@@ -281,10 +282,6 @@ public class Play implements Screen, ContactListener {
         world.setContactListener(this);
         //ready=true;
     }
-
-
-    //
-    private Stack<Contact> contacts = new Stack<Contact>();
 
     @Override
     public void beginContact(Contact contact) {
